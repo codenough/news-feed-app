@@ -4,8 +4,8 @@
 
 :root {
   /* --- Primary Brand Colors --- */
-  --color-brand-primary: #0A74DA;
-  --color-brand-accent: #F05C3B;
+  --color-brand-primary: #639D75;
+  --color-brand-accent: #9D7563;
 
   /* --- Neutral/Greyscale Colors --- */
   --color-neutral-white: #FFFFFF;
@@ -53,8 +53,8 @@
 
 [data-theme="dark"] {
   /* --- Primary Brand Colors (adjusted for dark context) --- */
-  --color-brand-primary: #5BA7ED;
-  --color-brand-accent: #FF7B5C;
+  --color-brand-primary: #FFEE8C;
+  --color-brand-accent: #2E8B57;
 
   /* --- Neutral/Greyscale Colors for Dark Mode --- */
   --color-neutral-white: #FFFFFF;
@@ -77,7 +77,7 @@
   --color-text-primary: var(--color-neutral-dark-text);
   --color-text-secondary: var(--color-neutral-slate);
   --color-text-tertiary: var(--color-neutral-light-text);
-  --color-text-on-primary: var(--color-neutral-white);
+  --color-text-on-primary: #1A1A1A;
   --color-text-on-accent: var(--color-neutral-white);
   --color-text-read: var(--color-neutral-slate);
 

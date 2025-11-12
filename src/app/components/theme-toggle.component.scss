@@ -16,8 +16,7 @@
   }
 
   &:focus {
-    outline: 2px solid var(--color-state-focus);
-    outline-offset: 2px;
+    outline: none;
   }
 
   svg {

@@ -84,8 +84,7 @@
   }
 
   &:focus {
-    outline: 2px solid var(--color-state-focus);
-    outline-offset: 2px;
+    outline: none;
   }
 
   &--active {
@@ -220,8 +219,7 @@
   }
 
   &:focus {
-    outline: 2px solid var(--color-state-focus);
-    outline-offset: 2px;
+    outline: none;
   }
 
   svg {
@@ -267,8 +265,7 @@
   }
 
   &:focus {
-    outline: 2px solid var(--color-state-focus);
-    outline-offset: 2px;
+    outline: none;
   }
 
   &--active {
@@ -316,8 +313,7 @@
   }
 
   &:focus {
-    outline: 2px solid var(--color-state-focus);
-    outline-offset: 2px;
+    outline: none;
   }
 
   .sort-label {
@@ -351,8 +347,7 @@
   }
 
   &:focus {
-    outline: 2px solid var(--color-state-focus);
-    outline-offset: 2px;
+    outline: none;
   }
 
   &:disabled {
@@ -404,8 +399,7 @@
   }
 
   &:focus {
-    outline: 2px solid var(--color-state-focus);
-    outline-offset: 2px;
+    outline: none;
   }
 
   svg {
