@@ -3,38 +3,108 @@
     <div class="header-content">
       <h1 class="app-title">{{ title() }}</h1>
       <div class="header-actions">
-        <button
-          type="button"
-          class="view-toggle-btn"
-          (click)="toggleViewMode()"
-          [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
-        >
-          @if (viewMode() === 'grid') {
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="8" y1="6" x2="21" y2="6"/>
-              <line x1="8" y1="12" x2="21" y2="12"/>
-              <line x1="8" y1="18" x2="21" y2="18"/>
-              <line x1="3" y1="6" x2="3.01" y2="6"/>
-              <line x1="3" y1="12" x2="3.01" y2="12"/>
-              <line x1="3" y1="18" x2="3.01" y2="18"/>
+        <div class="header-controls">
+          <button
+            type="button"
+            class="sort-toggle-btn"
+            (click)="toggleSort()"
+            [attr.aria-label]="sortOrder() === 'desc' ? 'Sort by oldest first' : 'Sort by latest first'"
+            [title]="sortOrder() === 'desc' ? 'Sort by oldest' : 'Sort by latest'"
+          >
+            @if (sortOrder() === 'desc') {
+              <span nz-icon nzType="sort-descending" nzTheme="outline"></span>
+              <span class="sort-label">Latest</span>
+            } @else {
+              <span nz-icon nzType="sort-ascending" nzTheme="outline"></span>
+              <span class="sort-label">Oldest</span>
+            }
+          </button>
+
+          <button
+            type="button"
+            class="refresh-btn"
+            (click)="onRefresh()"
+            [disabled]="isLoading()"
+            aria-label="Refresh feed"
+            title="Refresh feed"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              [class.spinning]="isLoading()"
+            >
+              <polyline points="23 4 23 10 17 10"/>
+              <polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
             </svg>
-          } @else {
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
+          </button>
+
+          @if (lastFetchTimestamp()) {
+            <span class="last-updated">
+              Last updated: {{ getFormattedTimestamp() }}
+            </span>
           }
-        </button>
-        <app-theme-toggle />
+        </div>
+
+        <div class="header-actions-right">
+          <button
+            type="button"
+            class="view-toggle-btn"
+            (click)="toggleViewMode()"
+            [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+          >
+            @if (viewMode() === 'grid') {
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6"/>
+                <line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                <line x1="3" y1="18" x2="3.01" y2="18"/>
+              </svg>
+            } @else {
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            }
+          </button>
+          <app-theme-toggle />
+        </div>
       </div>
     </div>
   </header>
 
   <main class="app-main">
+    @if (error()) {
+      <div class="error-message">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>{{ error() }}</p>
+        <button type="button" class="retry-btn" (click)="onRefresh()">
+          Retry
+        </button>
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading articles...</p>
+      </div>
+    }
+
     <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
-      @for (article of sampleArticles; track article.id) {
+      @for (article of articles() | async; track article.id) {
         <app-news-card
           [article]="article"
           [viewMode]="viewMode()"
@@ -47,3 +117,4 @@
     </div>
   </main>
 </div>
+
