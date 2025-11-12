@@ -1,0 +1,42 @@
+<button
+  nz-dropdown
+  [nzDropdownMenu]="menu"
+  nzTrigger="click"
+  nzPlacement="bottomRight"
+  type="button"
+  class="menu-trigger"
+  (click)="$event.stopPropagation()"
+  aria-label="Article options"
+>
+  <span nz-icon nzType="more" nzTheme="outline"></span>
+</button>
+
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ul nz-menu class="article-menu">
+    @if (!article.isRead) {
+      <li nz-menu-item (click)="onMarkRead()">
+        <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+        <span>Mark as read</span>
+      </li>
+    } @else {
+      <li nz-menu-item (click)="onMarkUnread()">
+        <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+        <span>Mark as unread</span>
+      </li>
+    }
+
+    <li nz-menu-divider></li>
+
+    @if (!article.isSkipped) {
+      <li nz-menu-item (click)="onSkip()">
+        <span nz-icon nzType="eye-invisible" nzTheme="outline"></span>
+        <span>Skip article</span>
+      </li>
+    } @else {
+      <li nz-menu-item (click)="onUndoSkip()">
+        <span nz-icon nzType="eye" nzTheme="outline"></span>
+        <span>Undo skip</span>
+      </li>
+    }
+  </ul>
+</nz-dropdown-menu>

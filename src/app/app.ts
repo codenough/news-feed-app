@@ -5,6 +5,7 @@ import { ThemeToggleComponent } from './components/theme-toggle.component';
 import { NewsArticle } from './models/news-article.interface';
 import { NewsService, SortOrder } from './services/news.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { MenuAction } from './components/article-menu/article-menu.component';
 
 @Component({
   selector: 'app-root',
@@ -59,8 +60,21 @@ export class App implements OnInit {
     this.newsService.toggleReadLater(article.id);
   }
 
-  protected onMenuClick(article: NewsArticle): void {
-    console.log('Menu clicked for:', article.title);
+  protected onMenuAction(action: MenuAction): void {
+    switch (action.type) {
+      case 'mark-read':
+        this.newsService.markAsRead(action.article.id);
+        break;
+      case 'mark-unread':
+        this.newsService.toggleReadStatus(action.article.id);
+        break;
+      case 'skip':
+        this.newsService.skipArticle(action.article.id);
+        break;
+      case 'undo-skip':
+        this.newsService.undoSkip(action.article.id);
+        break;
+    }
   }
 
   protected toggleViewMode(): void {

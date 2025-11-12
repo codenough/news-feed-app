@@ -1,7 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 import { NewsArticle } from '../models/news-article.interface';
+import { ArticlePersistenceService } from './article-persistence.service';
 
 export type SortOrder = 'desc' | 'asc';
 
@@ -29,6 +30,8 @@ export class NewsService {
   error = signal<string | null>(null);
 
   currentSortOrder = signal<SortOrder>('desc');
+
+  private persistenceService = inject(ArticlePersistenceService);
 
   constructor(private http: HttpClient) {}
 
@@ -100,6 +103,11 @@ export class NewsService {
         : article
     );
     this.articlesSubject.next(updatedArticles);
+
+    const article = updatedArticles.find(a => a.id === articleId);
+    if (article) {
+      this.persistenceService.saveArticleState(articleId, { isBookmarked: article.isBookmarked });
+    }
   }
 
   toggleReadLater(articleId: string): void {
@@ -110,6 +118,11 @@ export class NewsService {
         : article
     );
     this.articlesSubject.next(updatedArticles);
+
+    const article = updatedArticles.find(a => a.id === articleId);
+    if (article) {
+      this.persistenceService.saveArticleState(articleId, { isReadLater: article.isReadLater });
+    }
   }
 
   markAsRead(articleId: string): void {
@@ -120,6 +133,8 @@ export class NewsService {
         : article
     );
     this.articlesSubject.next(updatedArticles);
+
+    this.persistenceService.saveArticleState(articleId, { isRead: true });
   }
 
   toggleReadStatus(articleId: string): void {
@@ -130,6 +145,11 @@ export class NewsService {
         : article
     );
     this.articlesSubject.next(updatedArticles);
+
+    const article = updatedArticles.find(a => a.id === articleId);
+    if (article) {
+      this.persistenceService.saveArticleState(articleId, { isRead: article.isRead });
+    }
   }
 
   skipArticle(articleId: string): void {
@@ -140,6 +160,8 @@ export class NewsService {
         : article
     );
     this.articlesSubject.next(updatedArticles);
+
+    this.persistenceService.saveArticleState(articleId, { isSkipped: true });
   }
 
   undoSkip(articleId: string): void {
@@ -150,6 +172,8 @@ export class NewsService {
         : article
     );
     this.articlesSubject.next(updatedArticles);
+
+    this.persistenceService.saveArticleState(articleId, { isSkipped: false });
   }
 
   getMockArticles(): NewsArticle[] {
@@ -243,7 +267,22 @@ export class NewsService {
 
   loadMockData(): void {
     const mockArticles = this.getMockArticles();
-    const sortedArticles = this.sortArticlesLocally(mockArticles, this.currentSortOrder());
+
+    const articlesWithPersistedState = mockArticles.map(article => {
+      const persistedState = this.persistenceService.getArticleState(article.id);
+      if (persistedState) {
+        return {
+          ...article,
+          isRead: persistedState.isRead,
+          isBookmarked: persistedState.isBookmarked,
+          isReadLater: persistedState.isReadLater,
+          isSkipped: persistedState.isSkipped
+        };
+      }
+      return article;
+    });
+
+    const sortedArticles = this.sortArticlesLocally(articlesWithPersistedState, this.currentSortOrder());
     this.articlesSubject.next(sortedArticles);
     this.lastFetchTimestamp.set(new Date());
   }

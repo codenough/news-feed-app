@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NewsArticle } from '../../models/news-article.interface';
+import { ArticleMenuComponent, MenuAction } from '../article-menu/article-menu.component';
 
 @Component({
   selector: 'app-news-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ArticleMenuComponent],
   templateUrl: './news-card.component.html',
   styleUrl: './news-card.component.scss'
 })
@@ -16,7 +17,7 @@ export class NewsCardComponent {
   @Output() cardClick = new EventEmitter<NewsArticle>();
   @Output() bookmarkToggle = new EventEmitter<NewsArticle>();
   @Output() readLaterToggle = new EventEmitter<NewsArticle>();
-  @Output() menuClick = new EventEmitter<NewsArticle>();
+  @Output() menuAction = new EventEmitter<MenuAction>();
 
   onCardClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -35,9 +36,8 @@ export class NewsCardComponent {
     this.readLaterToggle.emit(this.article);
   }
 
-  onMenuClick(event: Event): void {
-    event.stopPropagation();
-    this.menuClick.emit(this.article);
+  onMenuAction(action: MenuAction): void {
+    this.menuAction.emit(action);
   }
 
   getRelativeTime(date: Date): string {
