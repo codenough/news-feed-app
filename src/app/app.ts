@@ -4,6 +4,7 @@ import { NewsCardComponent } from './components/news-card/news-card.component';
 import { ThemeToggleComponent } from './components/theme-toggle.component';
 import { NewsArticle } from './models/news-article.interface';
 import { NewsService, SortOrder } from './services/news.service';
+import { UserPreferencesService } from './services/user-preferences.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { MenuAction } from './components/article-menu/article-menu.component';
 
@@ -15,10 +16,12 @@ import { MenuAction } from './components/article-menu/article-menu.component';
 })
 export class App implements OnInit {
   protected readonly title = signal('Chronicle News Feed');
-  protected viewMode = signal<'grid' | 'list'>('grid');
-  protected sortOrder = signal<SortOrder>('desc');
 
   private newsService = inject(NewsService);
+  private preferencesService = inject(UserPreferencesService);
+
+  protected viewMode = this.preferencesService.viewMode;
+  protected sortOrder = this.preferencesService.sortOrder;
 
   protected articles = computed(() => {
     return this.newsService.articles$;
@@ -29,6 +32,7 @@ export class App implements OnInit {
   protected lastFetchTimestamp = this.newsService.lastFetchTimestamp;
 
   ngOnInit(): void {
+    this.newsService.setSortOrder(this.sortOrder());
     this.newsService.loadMockData();
   }
 
@@ -37,14 +41,15 @@ export class App implements OnInit {
   }
 
   protected onSortChange(order: SortOrder): void {
-    this.sortOrder.set(order);
+    this.preferencesService.setSortOrder(order);
     this.newsService.setSortOrder(order);
     this.newsService.loadMockData();
   }
 
   protected toggleSort(): void {
-    const newOrder = this.sortOrder() === 'desc' ? 'asc' : 'desc';
-    this.onSortChange(newOrder);
+    this.preferencesService.toggleSortOrder();
+    this.newsService.setSortOrder(this.sortOrder());
+    this.newsService.loadMockData();
   }
 
   protected onCardClick(article: NewsArticle): void {
@@ -78,7 +83,7 @@ export class App implements OnInit {
   }
 
   protected toggleViewMode(): void {
-    this.viewMode.update(mode => mode === 'grid' ? 'list' : 'grid');
+    this.preferencesService.toggleViewMode();
   }
 
   protected getFormattedTimestamp(): string {
