@@ -165,12 +165,53 @@
 .ant-alert {
   border-color: var(--color-border-default);
 
+  &-message,
+  &-description {
+    color: var(--color-text-primary);
+
+    [data-theme="dark"] & {
+      color: var(--color-neutral-dark-text);
+    }
+  }
+
+  &-close-icon,
+  &-close-text {
+    color: var(--color-icon-default);
+
+    &:hover {
+      color: var(--color-icon-active);
+    }
+
+    [data-theme="dark"] & {
+      color: var(--color-neutral-slate) !important;
+
+      &:hover {
+        color: var(--color-brand-primary) !important;
+      }
+    }
+  }
+
+  .anticon-close {
+    [data-theme="dark"] & {
+      color: var(--color-neutral-slate) !important;
+
+      &:hover {
+        color: var(--color-brand-primary) !important;
+      }
+    }
+  }
+
   &-info {
     background-color: rgba(140, 157, 255, 0.1);
     border-color: var(--color-brand-primary);
 
     .ant-alert-icon {
       color: var(--color-brand-primary);
+    }
+
+    [data-theme="dark"] & {
+      background-color: rgba(255, 238, 140, 0.15);
+      border-color: var(--color-brand-primary);
     }
   }
 
@@ -181,6 +222,11 @@
     .ant-alert-icon {
       color: #52c41a;
     }
+
+    [data-theme="dark"] & {
+      background-color: rgba(46, 139, 87, 0.2);
+      border-color: #52c41a;
+    }
   }
 
   &-warning {
@@ -190,6 +236,11 @@
     .ant-alert-icon {
       color: #faad14;
     }
+
+    [data-theme="dark"] & {
+      background-color: rgba(250, 173, 20, 0.15);
+      border-color: #faad14;
+    }
   }
 
   &-error {
@@ -198,6 +249,70 @@
 
     .ant-alert-icon {
       color: var(--color-brand-accent);
+    }
+
+    [data-theme="dark"] & {
+      background-color: rgba(240, 92, 59, 0.15);
+      border-color: #ff6b6b;
+
+      .ant-alert-icon {
+        color: #ff6b6b;
+      }
+    }
+  }
+}
+
+// Message
+.ant-message {
+  &-notice-content {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border-default);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    [data-theme="dark"] & {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  &-custom-content {
+    color: var(--color-text-primary);
+
+    [data-theme="dark"] & {
+      color: var(--color-neutral-dark-text) !important;
+    }
+  }
+
+  &-success {
+    .anticon {
+      color: #52c41a;
+    }
+  }
+
+  &-error {
+    .anticon {
+      color: #ff4d4f;
+
+      [data-theme="dark"] & {
+        color: #ff6b6b;
+      }
+    }
+  }
+
+  &-warning {
+    .anticon {
+      color: #faad14;
+    }
+  }
+
+  &-info {
+    .anticon {
+      color: var(--color-brand-primary);
+    }
+  }
+
+  &-loading {
+    .anticon {
+      color: var(--color-brand-primary);
     }
   }
 }

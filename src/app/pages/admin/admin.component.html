@@ -153,16 +153,73 @@
         <label class="form-label" for="sourceUrl">
           RSS Feed URL <span class="required">*</span>
         </label>
-        <input
-          nz-input
-          id="sourceUrl"
-          type="url"
-          placeholder="https://example.com/feed.xml"
-          [(ngModel)]="sourceUrl"
-          (ngModelChange)="sourceUrl.set($event)"
-        />
+        <div class="url-input-group">
+          <input
+            nz-input
+            id="sourceUrl"
+            type="url"
+            placeholder="https://example.com/feed.xml"
+            [(ngModel)]="sourceUrl"
+            (ngModelChange)="sourceUrl.set($event)"
+            [disabled]="isTesting()"
+          />
+          <button
+            nz-button
+            nzType="default"
+            (click)="testFetch()"
+            [nzLoading]="isTesting()"
+            [disabled]="!sourceUrl()"
+            nz-tooltip
+            nzTooltipTitle="Test fetch articles from this URL"
+          >
+            <span nz-icon nzType="experiment" nzTheme="outline"></span>
+            Test Fetch
+          </button>
+        </div>
         <span class="form-hint">Enter the full RSS or Atom feed URL</span>
       </div>
+
+      @if (showTestResults()) {
+        <div class="test-results">
+          @if (testResult()?.success) {
+            <nz-alert
+              nzType="success"
+              nzShowIcon
+              [nzMessage]="'Successfully fetched ' + testResult()?.articles?.length + ' articles (showing first 5)'"
+              nzCloseable
+              (nzOnClose)="showTestResults.set(false)"
+            ></nz-alert>
+
+            <div class="test-articles">
+              @for (article of testResult()?.articles; track article.id) {
+                <div class="test-article-card">
+                  @if (article.imageUrl) {
+                    <img [src]="article.imageUrl" [alt]="article.title" class="test-article-image" />
+                  }
+                  <div class="test-article-content">
+                    <h4 class="test-article-title">{{ article.title }}</h4>
+                    <p class="test-article-description">{{ article.description }}</p>
+                    <div class="test-article-meta">
+                      <span class="test-article-source">{{ article.sourceName }}</span>
+                      <span class="test-article-separator">•</span>
+                      <span class="test-article-date">{{ article.publishedAt | date: 'MMM d, y' }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <nz-alert
+              nzType="error"
+              nzShowIcon
+              [nzMessage]="'Failed to fetch feed'"
+              [nzDescription]="testResult()?.error || 'Unknown error'"
+              nzCloseable
+              (nzOnClose)="showTestResults.set(false)"
+            ></nz-alert>
+          }
+        </div>
+      }
 
       <div class="form-group">
         <label class="form-label">

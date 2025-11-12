@@ -10,7 +10,11 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { SourceManagementService, NewsSource } from '../../services/source-management.service';
+import { RssParserService } from '../../services/rss-parser.service';
+import { NewsArticle } from '../../models/news-article.interface';
 
 @Component({
   selector: 'app-admin',
@@ -25,13 +29,16 @@ import { SourceManagementService, NewsSource } from '../../services/source-manag
     NzModalModule,
     NzInputModule,
     NzSwitchModule,
-    NzToolTipModule
+    NzToolTipModule,
+    NzSpinModule,
+    NzAlertModule
   ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent {
   private sourceManagementService = inject(SourceManagementService);
+  private rssParserService = inject(RssParserService);
   private message = inject(NzMessageService);
 
   sources = this.sourceManagementService.sources;
@@ -44,11 +51,17 @@ export class AdminComponent {
   sourceUrl = signal('');
   sourceEnabled = signal(true);
 
+  isTesting = signal(false);
+  testResult = signal<{ success: boolean; articles?: NewsArticle[]; error?: string } | null>(null);
+  showTestResults = signal(false);
+
   showAddModal(): void {
     this.isEditMode.set(false);
     this.sourceName.set('');
     this.sourceUrl.set('');
     this.sourceEnabled.set(true);
+    this.testResult.set(null);
+    this.showTestResults.set(false);
     this.isModalVisible.set(true);
   }
 
@@ -58,11 +71,65 @@ export class AdminComponent {
     this.sourceName.set(source.name);
     this.sourceUrl.set(source.url);
     this.sourceEnabled.set(source.enabled);
+    this.testResult.set(null);
+    this.showTestResults.set(false);
     this.isModalVisible.set(true);
   }
 
   handleCancel(): void {
     this.isModalVisible.set(false);
+    this.testResult.set(null);
+    this.showTestResults.set(false);
+  }
+
+  async testFetch(): Promise<void> {
+    const url = this.sourceUrl();
+
+    if (!url) {
+      this.message.warning('Please enter a feed URL first');
+      return;
+    }
+
+    if (!this.isValidUrl(url)) {
+      this.message.error('Please enter a valid URL');
+      return;
+    }
+
+    this.isTesting.set(true);
+    this.testResult.set(null);
+    this.showTestResults.set(false);
+
+    this.rssParserService.fetchAndParseRSS(url, this.sourceName() || 'Test Feed').subscribe({
+      next: (result) => {
+        if (result.articles.length > 0) {
+          const previewArticles = result.articles.slice(0, 5);
+          this.testResult.set({
+            success: true,
+            articles: previewArticles
+          });
+          this.message.success(`Successfully fetched ${result.articles.length} articles`);
+          this.showTestResults.set(true);
+        } else {
+          this.testResult.set({
+            success: false,
+            error: 'No articles found in the feed'
+          });
+          this.message.warning('Feed parsed but no articles found');
+          this.showTestResults.set(true);
+        }
+        this.isTesting.set(false);
+      },
+      error: (error) => {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        this.testResult.set({
+          success: false,
+          error: errorMessage
+        });
+        this.message.error('Failed to fetch feed');
+        this.showTestResults.set(true);
+        this.isTesting.set(false);
+      }
+    });
   }
 
   handleOk(): void {
