@@ -7,7 +7,7 @@ export type Theme = 'light' | 'dark';
 })
 export class ThemeService {
   private readonly THEME_STORAGE_KEY = 'news-feed-theme';
-  
+
   theme = signal<Theme>(this.getInitialTheme());
 
   constructor() {
@@ -28,7 +28,7 @@ export class ThemeService {
 
   private getInitialTheme(): Theme {
     const savedTheme = localStorage.getItem(this.THEME_STORAGE_KEY) as Theme;
-    
+
     if (savedTheme) {
       return savedTheme;
     }
@@ -39,7 +39,7 @@ export class ThemeService {
 
   private applyTheme(theme: Theme): void {
     const htmlElement = document.documentElement;
-    
+
     if (theme === 'dark') {
       htmlElement.setAttribute('data-theme', 'dark');
     } else {

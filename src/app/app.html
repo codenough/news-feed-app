@@ -1,4 +1,49 @@
-<!-- NG-ZORRO -->
-<a href="https://github.com/NG-ZORRO/ng-zorro-antd" target="_blank" style="display: flex;align-items: center;justify-content: center;height: 100%;width: 100%;">
-  <img height="300" alt="logo" src="https://img.alicdn.com/tfs/TB1X.qJJgHqK1RjSZFgXXa7JXXa-89-131.svg">
-</a>
+<div class="app-container">
+  <header class="app-header">
+    <div class="header-content">
+      <h1 class="app-title">{{ title() }}</h1>
+      <div class="header-actions">
+        <button
+          type="button"
+          class="view-toggle-btn"
+          (click)="toggleViewMode()"
+          [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+        >
+          @if (viewMode() === 'grid') {
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+          } @else {
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          }
+        </button>
+        <app-theme-toggle />
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
+      @for (article of sampleArticles; track article.id) {
+        <app-news-card
+          [article]="article"
+          [viewMode]="viewMode()"
+          (cardClick)="onCardClick($event)"
+          (bookmarkToggle)="onBookmarkToggle($event)"
+          (readLaterToggle)="onReadLaterToggle($event)"
+          (menuClick)="onMenuClick($event)"
+        />
+      }
+    </div>
+  </main>
+</div>

@@ -1,0 +1,91 @@
+<article 
+  class="news-card" 
+  [class.news-card--list]="viewMode === 'list'"
+  [class.news-card--read]="article.isRead"
+  (click)="onCardClick($event)"
+>
+  <div class="news-card__image-container">
+    @if (article.imageUrl) {
+      <img 
+        [src]="article.imageUrl" 
+        [alt]="article.title"
+        class="news-card__image"
+        loading="lazy"
+      />
+    } @else {
+      <div class="news-card__image-placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+      </div>
+    }
+    @if (!article.isRead) {
+      <span class="news-card__unread-indicator"></span>
+    }
+  </div>
+
+  <div class="news-card__content">
+    <h3 class="news-card__title">{{ article.title }}</h3>
+    
+    @if (article.description) {
+      <p class="news-card__snippet">{{ article.description }}</p>
+    }
+
+    <div class="news-card__metadata">
+      <span class="news-card__source">{{ article.sourceName }}</span>
+      <span class="news-card__separator">|</span>
+      <span class="news-card__time">{{ getRelativeTime(article.publishedAt) }}</span>
+    </div>
+  </div>
+
+  <div class="news-card__actions card-actions">
+    <button
+      type="button"
+      class="news-card__action-btn"
+      [class.news-card__action-btn--active]="article.isBookmarked"
+      (click)="onBookmarkClick($event)"
+      [attr.aria-label]="article.isBookmarked ? 'Remove bookmark' : 'Bookmark article'"
+      title="Bookmark"
+    >
+      @if (article.isBookmarked) {
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+      } @else {
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+      }
+    </button>
+
+    <button
+      type="button"
+      class="news-card__action-btn"
+      [class.news-card__action-btn--active]="article.isReadLater"
+      (click)="onReadLaterClick($event)"
+      [attr.aria-label]="article.isReadLater ? 'Remove from read later' : 'Add to read later'"
+      title="Read Later"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      class="news-card__action-btn"
+      (click)="onMenuClick($event)"
+      aria-label="More options"
+      title="More options"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="1"/>
+        <circle cx="12" cy="5" r="1"/>
+        <circle cx="12" cy="19" r="1"/>
+      </svg>
+    </button>
+  </div>
+</article>
