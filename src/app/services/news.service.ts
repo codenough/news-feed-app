@@ -1,9 +1,10 @@
 import { Injectable, signal, inject, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
+import { Observable, BehaviorSubject, tap, catchError, of, forkJoin } from 'rxjs';
 import { NewsArticle } from '../models/news-article.interface';
 import { ArticlePersistenceService } from './article-persistence.service';
 import { SourceManagementService } from './source-management.service';
+import { RssParserService } from './rss-parser.service';
 
 export type SortOrder = 'desc' | 'asc';
 export type FilterType = 'all' | 'unread' | 'read' | 'bookmarked';
@@ -70,6 +71,7 @@ export class NewsService {
 
   private persistenceService = inject(ArticlePersistenceService);
   private sourceManagementService = inject(SourceManagementService);
+  private rssParserService = inject(RssParserService);
 
   constructor(private http: HttpClient) {}
 
@@ -393,21 +395,104 @@ export class NewsService {
   }
 
   loadMockData(): void {
+    // Try to load from RSS feeds first
+    this.loadFromRSSFeeds();
+  }
+
+  loadFromRSSFeeds(): void {
+    this.isLoading.set(true);
+    this.error.set(null);
+
     // Get enabled sources
     const enabledSources = this.sourceManagementService.getEnabledSources();
-    
+
     // If no enabled sources, show empty state
     if (enabledSources.length === 0) {
       this.allArticles.set([]);
       this.lastFetchTimestamp.set(new Date());
+      this.isLoading.set(false);
+      return;
+    }
+
+    // Fetch from all enabled RSS feeds
+    const feedRequests = enabledSources.map(source =>
+      this.rssParserService.fetchAndParseRSS(source.url, source.name)
+    );
+
+    forkJoin(feedRequests).subscribe({
+      next: (results) => {
+        // Combine all articles from all sources
+        const allFetchedArticles: NewsArticle[] = [];
+        const errors: string[] = [];
+
+        results.forEach((result, index) => {
+          if (result.error) {
+            errors.push(`${enabledSources[index].name}: ${result.error}`);
+          } else {
+            allFetchedArticles.push(...result.articles);
+          }
+        });
+
+        // If all feeds failed, fall back to mock data
+        if (allFetchedArticles.length === 0) {
+          console.warn('All RSS feeds failed, using mock data');
+          if (errors.length > 0) {
+            this.error.set(`RSS feed errors: ${errors.join('; ')}`);
+          }
+          this.loadMockDataFallback();
+          return;
+        }
+
+        // Apply persisted state to fetched articles
+        const articlesWithPersistedState = allFetchedArticles.map(article => {
+          const persistedState = this.persistenceService.getArticleState(article.id);
+          if (persistedState) {
+            return {
+              ...article,
+              isRead: persistedState.isRead,
+              isBookmarked: persistedState.isBookmarked,
+              isReadLater: persistedState.isReadLater,
+              isSkipped: persistedState.isSkipped
+            };
+          }
+          return article;
+        });
+
+        const sortedArticles = this.sortArticlesLocally(articlesWithPersistedState, this.currentSortOrder());
+        this.allArticles.set(sortedArticles);
+        this.lastFetchTimestamp.set(new Date());
+        this.isLoading.set(false);
+
+        // Show warning if some feeds failed
+        if (errors.length > 0 && allFetchedArticles.length > 0) {
+          console.warn('Some RSS feeds failed:', errors);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading RSS feeds:', err);
+        this.error.set('Failed to load RSS feeds');
+        this.loadMockDataFallback();
+      }
+    });
+  }
+
+  private loadMockDataFallback(): void {
+    // Get enabled sources
+    const enabledSources = this.sourceManagementService.getEnabledSources();
+
+    // If no enabled sources, show empty state
+    if (enabledSources.length === 0) {
+      this.allArticles.set([]);
+      this.lastFetchTimestamp.set(new Date());
+      this.isLoading.set(false);
       return;
     }
 
     // Filter mock articles to only show those from enabled sources
     const mockArticles = this.getMockArticles();
     const sourceNames = new Set(enabledSources.map(s => s.name));
-    
-    const filteredArticles = mockArticles.filter(article => 
+
+    const filteredArticles = mockArticles.filter(article =>
       sourceNames.has(article.sourceName)
     );
 
@@ -428,5 +513,6 @@ export class NewsService {
     const sortedArticles = this.sortArticlesLocally(articlesWithPersistedState, this.currentSortOrder());
     this.allArticles.set(sortedArticles);
     this.lastFetchTimestamp.set(new Date());
+    this.isLoading.set(false);
   }
 }

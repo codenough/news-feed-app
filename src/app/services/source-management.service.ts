@@ -21,7 +21,7 @@ interface StoredSource {
 })
 export class SourceManagementService {
   private readonly STORAGE_KEY = 'chronicle-news-sources';
-  
+
   sources = signal<NewsSource[]>([]);
 
   constructor() {
@@ -95,7 +95,7 @@ export class SourceManagementService {
       enabled,
       lastUpdated: new Date()
     };
-    
+
     this.sources.set([...this.sources(), newSource]);
     this.saveSources();
     return newSource;
@@ -104,9 +104,9 @@ export class SourceManagementService {
   updateSource(id: string, name: string, url: string, enabled: boolean): boolean {
     const currentSources = this.sources();
     const index = currentSources.findIndex(s => s.id === id);
-    
+
     if (index === -1) return false;
-    
+
     const updatedSources = [...currentSources];
     updatedSources[index] = {
       ...updatedSources[index],
@@ -115,7 +115,7 @@ export class SourceManagementService {
       enabled,
       lastUpdated: new Date()
     };
-    
+
     this.sources.set(updatedSources);
     this.saveSources();
     return true;
@@ -124,16 +124,16 @@ export class SourceManagementService {
   toggleSource(id: string): boolean {
     const currentSources = this.sources();
     const index = currentSources.findIndex(s => s.id === id);
-    
+
     if (index === -1) return false;
-    
+
     const updatedSources = [...currentSources];
     updatedSources[index] = {
       ...updatedSources[index],
       enabled: !updatedSources[index].enabled,
       lastUpdated: new Date()
     };
-    
+
     this.sources.set(updatedSources);
     this.saveSources();
     return true;
@@ -142,9 +142,9 @@ export class SourceManagementService {
   deleteSource(id: string): boolean {
     const currentSources = this.sources();
     const filtered = currentSources.filter(s => s.id !== id);
-    
+
     if (filtered.length === currentSources.length) return false;
-    
+
     this.sources.set(filtered);
     this.saveSources();
     return true;
