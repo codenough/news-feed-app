@@ -257,10 +257,34 @@
   gap: 1rem;
 }
 
+.read-later-badge {
+  .ant-badge-count {
+    background-color: var(--color-brand-accent);
+  }
+}
+
 .header-actions-right {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.read-later-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  .btn-label {
+    display: inline;
+  }
+
+  span[nz-icon] {
+    font-size: 16px;
+  }
 }
 
 .sort-toggle-btn {

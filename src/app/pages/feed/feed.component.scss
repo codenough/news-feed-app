@@ -1,0 +1,116 @@
+// Feed component inherits most styles from global app.scss
+// Component-specific styles for the news feed display
+
+.news-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+
+  &--list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-border-default);
+  border-top-color: var(--color-brand-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  gap: 1rem;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+
+  svg {
+    color: var(--color-brand-accent);
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    margin: 0;
+    text-align: center;
+  }
+}
+
+.no-results-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.no-results-icon {
+  color: var(--color-text-tertiary);
+  width: 64px;
+  height: 64px;
+  margin-bottom: 0.5rem;
+}
+
+.no-results-title {
+  font-family: 'Merriweather', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  text-align: center;
+}
+
+.no-results-message {
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  text-align: center;
+  max-width: 500px;
+  line-height: 1.6;
+
+  strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+}
+

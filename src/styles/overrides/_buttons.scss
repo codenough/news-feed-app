@@ -1,0 +1,250 @@
+// Button Overrides - Theme-aware global button styles
+// These styles override ng-zorro button defaults to match the Chronicle theme
+
+// Base button styles
+.ant-btn {
+  border-radius: 6px;
+
+  // Circle buttons keep their round shape
+  &-circle {
+    border-radius: 50%;
+  }
+}
+
+// Primary Buttons
+.ant-btn-primary {
+  background-color: var(--color-bg-action-primary);
+  border-color: var(--color-bg-action-primary);
+  color: var(--color-text-on-primary);
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-state-hover);
+    border-color: var(--color-state-hover);
+    color: var(--color-text-on-primary) !important;
+  }
+
+  &:active {
+    background-color: var(--color-state-active);
+    border-color: var(--color-state-active);
+  }
+
+  &[disabled] {
+    background-color: var(--color-border-default);
+    border-color: var(--color-border-default);
+    color: var(--color-text-tertiary);
+    opacity: 0.6;
+  }
+}
+
+// Default Buttons
+.ant-btn-default {
+  background-color: transparent;
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-bg-page);
+    border-color: var(--color-brand-primary);
+    color: var(--color-brand-primary);
+  }
+
+  &:active {
+    background-color: var(--color-state-focus);
+    border-color: var(--color-brand-primary);
+    color: var(--color-brand-primary);
+  }
+
+  &[disabled] {
+    background-color: transparent;
+    border-color: var(--color-border-default);
+    color: var(--color-text-tertiary);
+    opacity: 0.6;
+  }
+}
+
+// Text Buttons (borderless, transparent background)
+.ant-btn-text {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-text-primary);
+  box-shadow: none;
+
+  &:hover,
+  &:focus {
+    color: var(--color-brand-primary);
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  &:active {
+    color: var(--color-state-active);
+    background-color: var(--color-state-focus);
+  }
+
+  &[disabled] {
+    color: var(--color-text-tertiary);
+    background-color: transparent;
+    opacity: 0.6;
+  }
+}
+
+// Link Buttons (styled like links)
+.ant-btn-link {
+  color: var(--color-brand-primary);
+  background-color: transparent;
+  border-color: transparent;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: var(--color-state-hover);
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  &:active {
+    color: var(--color-state-active);
+  }
+
+  &[disabled] {
+    color: var(--color-text-tertiary);
+    opacity: 0.6;
+  }
+}
+
+// Circle Buttons (icon-only circular buttons)
+.ant-btn-circle {
+  &.ant-btn-default {
+    &:hover,
+    &:focus {
+      background-color: var(--color-bg-card);
+    }
+  }
+
+  &.ant-btn-text {
+    &:hover,
+    &:focus {
+      background-color: var(--color-bg-card);
+    }
+  }
+}
+
+// Remove focus outline globally for all buttons
+.ant-btn {
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+
+  // Icon sizing consistency
+  .anticon {
+    vertical-align: middle;
+  }
+}
+
+// Loading state for buttons
+.ant-btn-loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+
+  .anticon {
+    color: inherit;
+  }
+}
+
+// Button groups
+.ant-btn-group {
+  .ant-btn {
+    &:not(:first-child):not(:last-child) {
+      border-left-color: var(--color-border-default);
+      border-right-color: var(--color-border-default);
+    }
+
+    &:first-child:not(:last-child) {
+      border-right-color: var(--color-border-default);
+    }
+
+    &:last-child:not(:first-child) {
+      border-left-color: var(--color-border-default);
+    }
+  }
+}
+
+// Specific context overrides
+
+// News card action buttons
+.news-card__action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: var(--color-icon-default);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-bg-card);
+    color: var(--color-icon-active);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &--active {
+    color: var(--color-icon-active);
+
+    &:hover {
+      color: var(--color-icon-highlight);
+    }
+  }
+}
+
+// Article menu trigger button
+.menu-trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: var(--color-icon-default);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-bg-card);
+    color: var(--color-icon-active);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// Source buttons in sidebar
+.source-btn {
+  &:focus {
+    outline: none;
+  }
+}
+
+// Filter control buttons
+.filter-controls {
+  .ant-btn {
+    font-weight: 600;
+  }
+}
+
+// Header control buttons
+.header-controls {
+  .ant-btn {
+    font-weight: 600;
+  }
+}

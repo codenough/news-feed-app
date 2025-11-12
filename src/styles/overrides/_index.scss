@@ -1,0 +1,237 @@
+// Global ng-zorro Component Overrides
+// All component-specific overrides are organized here for easy maintenance
+// These styles are theme-aware and use CSS custom properties
+
+// Import all override files
+@use './buttons';
+@use './inputs';
+@use './dropdowns';
+@use './badges';
+@use './date-picker';
+
+// Additional component overrides can be added here
+
+// Card Customizations
+.ant-card {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: var(--color-border-card-hover);
+    box-shadow: 0 2px 8px rgba(10, 116, 218, 0.15);
+  }
+
+  .ant-card-head {
+    border-bottom-color: var(--color-border-default);
+    color: var(--color-text-primary);
+    background-color: transparent;
+  }
+
+  .ant-card-meta-title {
+    color: var(--color-text-primary);
+  }
+
+  .ant-card-meta-description {
+    color: var(--color-text-secondary);
+  }
+
+  .ant-card-actions {
+    border-top-color: var(--color-border-default);
+    background-color: var(--color-bg-page);
+
+    > li {
+      color: var(--color-text-secondary);
+
+      &:hover {
+        color: var(--color-brand-primary);
+      }
+    }
+  }
+}
+
+// Modal Customizations
+.ant-modal {
+  &-content {
+    background-color: var(--color-bg-card);
+    color: var(--color-text-primary);
+  }
+
+  &-header {
+    background-color: var(--color-bg-card);
+    border-bottom-color: var(--color-border-default);
+
+    .ant-modal-title {
+      color: var(--color-text-primary);
+    }
+  }
+
+  &-body {
+    color: var(--color-text-primary);
+  }
+
+  &-footer {
+    border-top-color: var(--color-border-default);
+    background-color: transparent;
+  }
+
+  &-close {
+    color: var(--color-icon-default);
+
+    &:hover {
+      color: var(--color-icon-active);
+    }
+  }
+}
+
+// Layout Customizations
+.ant-layout {
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+
+  &-header {
+    background-color: var(--color-bg-navbar);
+    border-bottom: 1px solid var(--color-border-default);
+    color: var(--color-text-primary);
+  }
+
+  &-sider {
+    background-color: var(--color-bg-sidebar);
+    border-right: 1px solid var(--color-border-default);
+
+    .ant-layout-sider-trigger {
+      background-color: var(--color-bg-navbar);
+      color: var(--color-text-primary);
+    }
+  }
+
+  &-content {
+    background-color: var(--color-bg-page);
+    color: var(--color-text-primary);
+  }
+
+  &-footer {
+    background-color: var(--color-bg-navbar);
+    border-top: 1px solid var(--color-border-default);
+    color: var(--color-text-secondary);
+  }
+}
+
+// List Customizations
+.ant-list {
+  color: var(--color-text-primary);
+
+  &-item {
+    border-bottom-color: var(--color-border-default);
+    color: var(--color-text-primary);
+
+    &:hover {
+      background-color: var(--color-bg-card);
+    }
+  }
+
+  &-header,
+  &-footer {
+    background-color: transparent;
+    border-color: var(--color-border-default);
+    color: var(--color-text-primary);
+  }
+}
+
+// Divider
+.ant-divider {
+  border-top-color: var(--color-border-default);
+  color: var(--color-text-secondary);
+}
+
+// Spin (Loading)
+.ant-spin {
+  color: var(--color-brand-primary);
+
+  .ant-spin-dot-item {
+    background-color: var(--color-brand-primary);
+  }
+}
+
+// Empty State
+.ant-empty {
+  &-description {
+    color: var(--color-text-secondary);
+  }
+}
+
+// Alert
+.ant-alert {
+  border-color: var(--color-border-default);
+
+  &-info {
+    background-color: rgba(140, 157, 255, 0.1);
+    border-color: var(--color-brand-primary);
+
+    .ant-alert-icon {
+      color: var(--color-brand-primary);
+    }
+  }
+
+  &-success {
+    background-color: rgba(82, 196, 26, 0.1);
+    border-color: #52c41a;
+
+    .ant-alert-icon {
+      color: #52c41a;
+    }
+  }
+
+  &-warning {
+    background-color: rgba(250, 173, 20, 0.1);
+    border-color: #faad14;
+
+    .ant-alert-icon {
+      color: #faad14;
+    }
+  }
+
+  &-error {
+    background-color: rgba(240, 92, 59, 0.1);
+    border-color: var(--color-brand-accent);
+
+    .ant-alert-icon {
+      color: var(--color-brand-accent);
+    }
+  }
+}
+
+// Tooltip
+.ant-tooltip {
+  &-inner {
+    background-color: var(--color-neutral-dark-text);
+    color: var(--color-neutral-white);
+  }
+
+  &-arrow-content {
+    background-color: var(--color-neutral-dark-text);
+  }
+}
+
+// Popover
+.ant-popover {
+  &-inner {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border-default);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &-title {
+    border-bottom-color: var(--color-border-default);
+    color: var(--color-text-primary);
+  }
+
+  &-inner-content {
+    color: var(--color-text-primary);
+  }
+
+  &-arrow-content {
+    background-color: var(--color-bg-card);
+  }
+}

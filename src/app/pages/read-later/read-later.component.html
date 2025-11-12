@@ -1,0 +1,67 @@
+<div class="read-later-container">
+  <header class="read-later-header">
+    <div class="header-left">
+      <button
+        nz-button
+        nzType="text"
+        nzSize="default"
+        (click)="goBack()"
+        aria-label="Go back to main feed"
+        class="back-btn"
+      >
+        <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+        <span>Back to Feed</span>
+      </button>
+      <h1 class="page-title">
+        <span nz-icon nzType="clock-circle" nzTheme="outline" class="title-icon"></span>
+        Read Later
+        @if (readLaterCount() > 0) {
+          <span class="article-count">({{ readLaterCount() }})</span>
+        }
+      </h1>
+    </div>
+
+    <div class="header-actions">
+      @if (readLaterCount() > 0) {
+        <button
+          nz-button
+          nzType="default"
+          nzSize="default"
+          (click)="clearAllReadLater()"
+          aria-label="Clear all read later articles"
+        >
+          <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+          Clear All
+        </button>
+      }
+    </div>
+  </header>
+
+  <main class="read-later-content">
+    @if (readLaterCount() === 0) {
+      <div class="empty-state">
+        <span nz-icon nzType="clock-circle" nzTheme="outline" class="empty-icon"></span>
+        <h2 class="empty-title">No articles in Read Later</h2>
+        <p class="empty-message">
+          Articles you save to read later will appear here. Click the clock icon on any article to add it to this list.
+        </p>
+        <button nz-button nzType="primary" (click)="goBack()">
+          Browse Articles
+        </button>
+      </div>
+    } @else {
+      <div class="news-feed">
+        @for (article of readLaterArticles(); track article.id) {
+          <app-news-card
+            [article]="article"
+            [viewMode]="viewMode()"
+            (cardClick)="onCardClick($event)"
+            (bookmarkToggle)="onBookmarkToggle($event)"
+            (readLaterToggle)="onReadLaterToggle($event)"
+            (menuAction)="onMenuAction($event)"
+          />
+        }
+      </div>
+    }
+  </main>
+</div>

@@ -1,0 +1,155 @@
+// Badge & Tag Overrides - Theme-aware global styles
+
+// Badge Customizations
+.ant-badge {
+  // Badge count
+  &-count {
+    background-color: var(--color-brand-primary);
+    color: var(--color-text-on-primary);
+    box-shadow: 0 0 0 1px var(--color-bg-page);
+    font-weight: 600;
+    min-width: 20px;
+    height: 20px;
+    line-height: 20px;
+    border-radius: 10px;
+  }
+
+  // Badge dot
+  &-dot {
+    background-color: var(--color-state-unread-indicator);
+    box-shadow: 0 0 0 1px var(--color-bg-page);
+  }
+
+  // Status badge
+  &-status {
+    &-dot {
+      width: 8px;
+      height: 8px;
+    }
+
+    &-success {
+      background-color: #52c41a;
+    }
+
+    &-processing {
+      background-color: var(--color-brand-primary);
+    }
+
+    &-error {
+      background-color: var(--color-brand-accent);
+    }
+
+    &-warning {
+      background-color: #faad14;
+    }
+
+    &-default {
+      background-color: var(--color-text-secondary);
+    }
+  }
+}
+
+// Tag Customizations
+.ant-tag {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-secondary);
+  transition: all 0.3s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  // Close icon
+  .anticon-close {
+    color: var(--color-icon-default);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--color-icon-active);
+    }
+  }
+}
+
+// Colored Tags
+.ant-tag-blue {
+  background-color: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+}
+
+.ant-tag-red {
+  background-color: var(--color-brand-accent);
+  border-color: var(--color-brand-accent);
+  color: var(--color-text-on-accent);
+}
+
+.ant-tag-green {
+  background-color: #52c41a;
+  border-color: #52c41a;
+  color: #ffffff;
+}
+
+.ant-tag-yellow {
+  background-color: #faad14;
+  border-color: #faad14;
+  color: #ffffff;
+}
+
+.ant-tag-default {
+  background-color: var(--color-bg-page);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+// Checkable Tags
+.ant-tag-checkable {
+  background-color: transparent;
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-bg-page);
+    border-color: var(--color-brand-primary);
+    color: var(--color-brand-primary);
+  }
+
+  &-checked {
+    background-color: var(--color-bg-action-primary);
+    border-color: var(--color-brand-primary);
+    color: var(--color-text-on-primary);
+
+    &:hover {
+      background-color: var(--color-state-hover);
+    }
+  }
+}
+
+// Application-specific badges
+.unread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 0.5rem;
+  background-color: var(--color-brand-accent);
+  color: var(--color-text-on-primary);
+  border-radius: 12px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.95;
+  }
+}

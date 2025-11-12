@@ -1,0 +1,142 @@
+// Input Overrides - Theme-aware global input styles
+// These styles override ng-zorro input defaults to match the Chronicle theme
+
+// Base Input Styles
+.ant-input,
+.ant-input-affix-wrapper {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  &:hover {
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 0 0 2px rgba(140, 157, 255, 0.1) !important;
+  }
+
+  &:focus,
+  &-focused {
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 0 0 2px rgba(140, 157, 255, 0.1) !important;
+    outline: none !important;
+  }
+
+  &[disabled] {
+    background-color: var(--color-bg-page);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// Input with prefix/suffix icons
+.ant-input-affix-wrapper {
+  padding: 0;
+
+  .ant-input {
+    border: none;
+    background: transparent;
+
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+
+  .ant-input-prefix,
+  .ant-input-suffix {
+    color: var(--color-icon-default);
+
+    .anticon {
+      color: inherit;
+    }
+  }
+
+  &:hover {
+    .ant-input-prefix,
+    .ant-input-suffix {
+      color: var(--color-icon-active);
+    }
+  }
+
+  &-focused {
+    .ant-input-prefix {
+      color: var(--color-brand-primary);
+    }
+  }
+}
+
+// Input Groups
+.ant-input-group {
+  &-wrapper {
+    .ant-input-group-addon {
+      background-color: var(--color-bg-card);
+      border-color: var(--color-border-default);
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+// Search Input Customizations
+.search-container {
+  .ant-input-affix-wrapper {
+    &:hover,
+    &:focus,
+    &-focused {
+      .search-clear-icon {
+        color: var(--color-icon-active);
+      }
+    }
+  }
+
+  .search-clear-icon {
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--color-brand-primary) !important;
+    }
+  }
+}
+
+// Text Areas
+.ant-input-textarea {
+  .ant-input {
+    background-color: var(--color-bg-card);
+    border-color: var(--color-border-default);
+    color: var(--color-text-primary);
+
+    &:hover,
+    &:focus {
+      border-color: var(--color-brand-primary);
+    }
+  }
+}
+
+// Input Number
+.ant-input-number {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border-default);
+
+  .ant-input-number-input {
+    color: var(--color-text-primary);
+  }
+
+  &:hover,
+  &:focus,
+  &-focused {
+    border-color: var(--color-brand-primary);
+  }
+
+  .ant-input-number-handler {
+    border-color: var(--color-border-default);
+    color: var(--color-icon-default);
+
+    &:hover {
+      color: var(--color-brand-primary);
+    }
+  }
+}

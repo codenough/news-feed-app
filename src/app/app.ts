@@ -1,28 +1,28 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NewsCardComponent } from './components/news-card/news-card.component';
+import { Router, RouterOutlet } from '@angular/router';
 import { ThemeToggleComponent } from './components/theme-toggle.component';
 import { DateRangeFilterComponent, DateRange } from './components/date-range-filter.component';
-import { NewsArticle } from './models/news-article.interface';
 import { NewsService, SortOrder } from './services/news.service';
 import { UserPreferencesService, FilterType } from './services/user-preferences.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { MenuAction } from './components/article-menu/article-menu.component';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 
 @Component({
   selector: 'app-root',
   imports: [
     CommonModule,
     FormsModule,
-    NewsCardComponent,
+    RouterOutlet,
     ThemeToggleComponent,
     DateRangeFilterComponent,
     NzIconModule,
     NzInputModule,
-    NzButtonModule
+    NzButtonModule,
+    NzBadgeModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
@@ -32,6 +32,7 @@ export class App implements OnInit {
 
   private newsService = inject(NewsService);
   private preferencesService = inject(UserPreferencesService);
+  private router = inject(Router);
 
   protected viewMode = this.preferencesService.viewMode;
   protected sortOrder = this.preferencesService.sortOrder;
@@ -71,36 +72,6 @@ export class App implements OnInit {
     this.preferencesService.toggleSortOrder();
     this.newsService.setSortOrder(this.sortOrder());
     this.newsService.loadMockData();
-  }
-
-  protected onCardClick(article: NewsArticle): void {
-    window.open(article.url, '_blank');
-    this.newsService.markAsRead(article.id);
-  }
-
-  protected onBookmarkToggle(article: NewsArticle): void {
-    this.newsService.toggleBookmark(article.id);
-  }
-
-  protected onReadLaterToggle(article: NewsArticle): void {
-    this.newsService.toggleReadLater(article.id);
-  }
-
-  protected onMenuAction(action: MenuAction): void {
-    switch (action.type) {
-      case 'mark-read':
-        this.newsService.markAsRead(action.article.id);
-        break;
-      case 'mark-unread':
-        this.newsService.toggleReadStatus(action.article.id);
-        break;
-      case 'skip':
-        this.newsService.skipArticle(action.article.id);
-        break;
-      case 'undo-skip':
-        this.newsService.undoSkip(action.article.id);
-        break;
-    }
   }
 
   protected toggleViewMode(): void {
@@ -144,5 +115,13 @@ export class App implements OnInit {
       minute: '2-digit',
       hour12: true
     });
+  }
+
+  protected readLaterCount = computed(() => {
+    return this.articles().filter(article => article.isReadLater && !article.isSkipped).length;
+  });
+
+  protected navigateToReadLater(): void {
+    this.router.navigate(['/read-later']);
   }
 }

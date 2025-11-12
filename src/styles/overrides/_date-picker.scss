@@ -1,0 +1,252 @@
+// Date Picker Overrides - Theme-aware global styles
+
+// Date Picker Input
+.ant-picker {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+
+  &:hover {
+    border-color: var(--color-brand-primary);
+  }
+
+  &-focused {
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 0 0 2px rgba(140, 157, 255, 0.1);
+  }
+
+  .ant-picker-input {
+    input {
+      color: var(--color-text-primary);
+
+      &::placeholder {
+        color: var(--color-text-tertiary);
+      }
+    }
+  }
+
+  .ant-picker-suffix,
+  .ant-picker-clear {
+    color: var(--color-icon-default);
+
+    &:hover {
+      color: var(--color-icon-active);
+    }
+  }
+}
+
+// Date Picker Dropdown/Panel
+.ant-picker-dropdown {
+  .ant-picker-panel-container {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border-default);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .ant-picker-panel {
+    background-color: var(--color-bg-card);
+    border-color: var(--color-border-default);
+  }
+
+  // Header (month/year navigation)
+  .ant-picker-header {
+    color: var(--color-text-primary);
+    border-bottom-color: var(--color-border-default);
+
+    button {
+      color: var(--color-text-primary) !important;
+
+      &:hover {
+        color: var(--color-brand-primary) !important;
+      }
+    }
+
+    .ant-picker-header-view {
+      button {
+        color: var(--color-text-primary) !important;
+
+        &:hover {
+          color: var(--color-brand-primary) !important;
+        }
+      }
+    }
+  }
+
+  // Calendar body
+  .ant-picker-body {
+    color: var(--color-text-primary);
+  }
+
+  // Day names (Mon, Tue, etc.)
+  .ant-picker-content {
+    thead th {
+      color: var(--color-text-primary) !important;
+    }
+  }
+
+  // Date cells
+  .ant-picker-cell {
+    color: var(--color-text-primary);
+
+    &:hover {
+      .ant-picker-cell-inner {
+        background-color: var(--color-bg-page);
+      }
+    }
+
+    // Regular dates
+    .ant-picker-cell-inner {
+      color: var(--color-text-primary) !important;
+    }
+
+    // Today
+    &-today {
+      .ant-picker-cell-inner {
+        &::before {
+          border-color: var(--color-brand-primary) !important;
+        }
+      }
+    }
+
+    // Selected date
+    &-selected {
+      .ant-picker-cell-inner {
+        background-color: var(--color-brand-primary) !important;
+        color: var(--color-text-on-primary) !important;
+      }
+    }
+
+    // In range
+    &-in-range {
+      .ant-picker-cell-inner {
+        background-color: var(--color-state-focus);
+      }
+
+      &::before {
+        background-color: var(--color-state-focus);
+      }
+    }
+
+    // Range edges
+    &-range-start,
+    &-range-end {
+      .ant-picker-cell-inner {
+        background-color: var(--color-brand-primary) !important;
+        color: var(--color-text-on-primary) !important;
+      }
+    }
+
+    // Disabled dates
+    &-disabled {
+      .ant-picker-cell-inner {
+        color: var(--color-text-tertiary) !important;
+        background-color: transparent;
+        cursor: not-allowed;
+
+        &::before {
+          background-color: transparent;
+        }
+      }
+    }
+
+    // Previous/next month dates
+    &-in-view.ant-picker-cell-in-range {
+      &::before {
+        background-color: var(--color-state-focus);
+      }
+    }
+  }
+
+  // Dates from previous/next month
+  .ant-picker-cell-in-view {
+    &.ant-picker-cell {
+      color: var(--color-text-secondary) !important;
+
+      .ant-picker-cell-inner {
+        color: var(--color-text-secondary) !important;
+      }
+
+      &:hover {
+        .ant-picker-cell-inner {
+          background-color: var(--color-bg-page);
+          color: var(--color-neutral-dark-text) !important;
+        }
+      }
+    }
+  }
+
+  // Footer (Today button, etc.)
+  .ant-picker-footer {
+    background-color: var(--color-bg-card);
+    border-top-color: var(--color-border-default);
+
+    .ant-picker-today-btn {
+      color: var(--color-brand-primary);
+
+      &:hover {
+        color: var(--color-state-hover);
+      }
+    }
+
+    .ant-picker-ranges {
+      .ant-picker-preset {
+        .ant-tag {
+          background-color: var(--color-bg-page);
+          border-color: var(--color-border-default);
+          color: var(--color-text-primary);
+
+          &:hover {
+            background-color: var(--color-state-focus);
+            border-color: var(--color-brand-primary);
+            color: var(--color-brand-primary);
+          }
+        }
+      }
+    }
+  }
+
+  // Month/Year picker panels
+  .ant-picker-month-panel,
+  .ant-picker-year-panel {
+    .ant-picker-cell {
+      .ant-picker-cell-inner {
+        color: var(--color-text-primary) !important;
+      }
+
+      &:hover {
+        .ant-picker-cell-inner {
+          background-color: var(--color-bg-page);
+        }
+      }
+
+      &-selected {
+        .ant-picker-cell-inner {
+          background-color: var(--color-brand-primary) !important;
+          color: var(--color-text-on-primary) !important;
+        }
+      }
+    }
+  }
+
+  // Time picker
+  .ant-picker-time-panel {
+    .ant-picker-content {
+      color: var(--color-text-primary);
+    }
+
+    .ant-picker-time-panel-column {
+      > li {
+        color: var(--color-text-primary);
+
+        &:hover {
+          background-color: var(--color-bg-page);
+        }
+
+        &.ant-picker-time-panel-cell-selected {
+          background-color: var(--color-brand-primary);
+          color: var(--color-text-on-primary);
+        }
+      }
+    }
+  }
+}
