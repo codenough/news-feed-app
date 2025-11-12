@@ -29,10 +29,34 @@ export class NewsService {
   currentFilter = signal<FilterType>('all');
   currentSortOrder = signal<SortOrder>('desc');
   searchQuery = signal<string>('');
+  selectedSource = signal<string | null>(null);
 
   articles$ = computed(() => {
-    const filtered = this.filterArticles(this.allArticles(), this.currentFilter());
+    let filtered = this.filterArticles(this.allArticles(), this.currentFilter());
+    filtered = this.filterBySource(filtered, this.selectedSource());
     return this.searchArticles(filtered, this.searchQuery());
+  });
+
+  sources$ = computed(() => {
+    const articles = this.allArticles();
+    const sourcesMap = new Map<string, { total: number; unread: number }>();
+
+    articles.forEach(article => {
+      const existing = sourcesMap.get(article.sourceName) || { total: 0, unread: 0 };
+      existing.total++;
+      if (!article.isRead) {
+        existing.unread++;
+      }
+      sourcesMap.set(article.sourceName, existing);
+    });
+
+    return Array.from(sourcesMap.entries())
+      .map(([name, counts]) => ({
+        name,
+        total: counts.total,
+        unreadCount: counts.unread
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   });
 
   lastFetchTimestamp = signal<Date | null>(null);
@@ -111,6 +135,10 @@ export class NewsService {
     this.searchQuery.set(query);
   }
 
+  setSelectedSource(source: string | null): void {
+    this.selectedSource.set(source);
+  }
+
   filterArticles(articles: NewsArticle[], filter: FilterType): NewsArticle[] {
     switch (filter) {
       case 'unread':
@@ -123,6 +151,13 @@ export class NewsService {
       default:
         return articles;
     }
+  }
+
+  filterBySource(articles: NewsArticle[], source: string | null): NewsArticle[] {
+    if (!source) {
+      return articles;
+    }
+    return articles.filter(article => article.sourceName === source);
   }
 
   searchArticles(articles: NewsArticle[], query: string): NewsArticle[] {

@@ -24,6 +24,8 @@ export class App implements OnInit {
   protected sortOrder = this.preferencesService.sortOrder;
   protected currentFilter = this.preferencesService.currentFilter;
   protected searchQuery = this.newsService.searchQuery;
+  protected selectedSource = this.newsService.selectedSource;
+  protected sources = this.newsService.sources$;
 
   protected articles = this.newsService.articles$;
 
@@ -103,7 +105,12 @@ export class App implements OnInit {
 
   protected onClearFilters(): void {
     this.newsService.setSearchQuery('');
+    this.newsService.setSelectedSource(null);
     this.onFilterChange('all');
+  }
+
+  protected onSourceSelect(sourceName: string | null): void {
+    this.newsService.setSelectedSource(sourceName);
   }
 
   protected getFormattedTimestamp(): string {

@@ -150,6 +150,44 @@
     </div>
   </header>
 
+  <div class="app-content">
+    <aside class="app-sidebar">
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Sources</h3>
+        <ul class="source-list">
+          <li class="source-item">
+            <button
+              type="button"
+              class="source-btn"
+              [class.source-btn--active]="selectedSource() === null"
+              (click)="onSourceSelect(null)"
+              aria-label="Show articles from all sources"
+            >
+              <span class="source-name">All Sources</span>
+            </button>
+          </li>
+          @for (source of sources(); track source.name) {
+            <li class="source-item">
+              <button
+                type="button"
+                class="source-btn"
+                [class.source-btn--active]="selectedSource() === source.name"
+                (click)="onSourceSelect(source.name)"
+                [attr.aria-label]="'Show articles from ' + source.name"
+              >
+                <span class="source-name">{{ source.name }}</span>
+                @if (source.unreadCount > 0) {
+                  <span class="unread-badge" [attr.aria-label]="source.unreadCount + ' unread articles'">
+                    {{ source.unreadCount }}
+                  </span>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    </aside>
+
   <main class="app-main">
     @if (error()) {
       <div class="error-message">
@@ -215,5 +253,6 @@
       }
     </div>
   </main>
+  </div>
 </div>
 
