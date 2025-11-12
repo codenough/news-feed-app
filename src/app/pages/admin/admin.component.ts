@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -10,14 +10,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzMessageService } from 'ng-zorro-antd/message';
-
-interface NewsSource {
-  id: string;
-  name: string;
-  url: string;
-  enabled: boolean;
-  lastUpdated: Date;
-}
+import { SourceManagementService, NewsSource } from '../../services/source-management.service';
 
 @Component({
   selector: 'app-admin',
@@ -38,29 +31,10 @@ interface NewsSource {
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent {
-  sources = signal<NewsSource[]>([
-    {
-      id: '1',
-      name: 'TechCrunch',
-      url: 'https://techcrunch.com/feed/',
-      enabled: true,
-      lastUpdated: new Date('2025-11-12T10:30:00')
-    },
-    {
-      id: '2',
-      name: 'The Verge',
-      url: 'https://www.theverge.com/rss/index.xml',
-      enabled: true,
-      lastUpdated: new Date('2025-11-12T09:15:00')
-    },
-    {
-      id: '3',
-      name: 'Hacker News',
-      url: 'https://news.ycombinator.com/rss',
-      enabled: false,
-      lastUpdated: new Date('2025-11-11T18:45:00')
-    }
-  ]);
+  private sourceManagementService = inject(SourceManagementService);
+  private message = inject(NzMessageService);
+
+  sources = this.sourceManagementService.sources;
 
   isModalVisible = signal(false);
   isEditMode = signal(false);
@@ -69,8 +43,6 @@ export class AdminComponent {
   sourceName = signal('');
   sourceUrl = signal('');
   sourceEnabled = signal(true);
-
-  constructor(private message: NzMessageService) {}
 
   showAddModal(): void {
     this.isEditMode.set(false);
@@ -109,24 +81,15 @@ export class AdminComponent {
     }
 
     if (this.isEditMode()) {
-      const currentSources = this.sources();
       const sourceId = this.currentSource().id!;
-      const updatedSources = currentSources.map(s =>
-        s.id === sourceId
-          ? { ...s, name, url, enabled, lastUpdated: new Date() }
-          : s
-      );
-      this.sources.set(updatedSources);
-      this.message.success('Source updated successfully');
+      const success = this.sourceManagementService.updateSource(sourceId, name, url, enabled);
+      if (success) {
+        this.message.success('Source updated successfully');
+      } else {
+        this.message.error('Failed to update source');
+      }
     } else {
-      const newSource: NewsSource = {
-        id: Date.now().toString(),
-        name,
-        url,
-        enabled,
-        lastUpdated: new Date()
-      };
-      this.sources.set([...this.sources(), newSource]);
+      this.sourceManagementService.addSource(name, url, enabled);
       this.message.success('Source added successfully');
     }
 
@@ -134,21 +97,23 @@ export class AdminComponent {
   }
 
   toggleSource(source: NewsSource): void {
-    const currentSources = this.sources();
-    const updatedSources = currentSources.map(s =>
-      s.id === source.id ? { ...s, enabled: !s.enabled } : s
-    );
-    this.sources.set(updatedSources);
-    this.message.success(
-      `Source ${!source.enabled ? 'enabled' : 'disabled'} successfully`
-    );
+    const success = this.sourceManagementService.toggleSource(source.id);
+    if (success) {
+      this.message.success(
+        `Source ${!source.enabled ? 'enabled' : 'disabled'} successfully`
+      );
+    } else {
+      this.message.error('Failed to toggle source');
+    }
   }
 
   deleteSource(source: NewsSource): void {
-    const currentSources = this.sources();
-    const updatedSources = currentSources.filter(s => s.id !== source.id);
-    this.sources.set(updatedSources);
-    this.message.success('Source deleted successfully');
+    const success = this.sourceManagementService.deleteSource(source.id);
+    if (success) {
+      this.message.success('Source deleted successfully');
+    } else {
+      this.message.error('Failed to delete source');
+    }
   }
 
   showDeleteConfirm(source: NewsSource): void {

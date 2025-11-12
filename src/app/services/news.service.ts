@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 import { NewsArticle } from '../models/news-article.interface';
 import { ArticlePersistenceService } from './article-persistence.service';
+import { SourceManagementService } from './source-management.service';
 
 export type SortOrder = 'desc' | 'asc';
 export type FilterType = 'all' | 'unread' | 'read' | 'bookmarked';
@@ -68,6 +69,7 @@ export class NewsService {
   error = signal<string | null>(null);
 
   private persistenceService = inject(ArticlePersistenceService);
+  private sourceManagementService = inject(SourceManagementService);
 
   constructor(private http: HttpClient) {}
 
@@ -308,7 +310,7 @@ export class NewsService {
         title: 'Breaking: New Climate Agreement Reached at Global Summit',
         description: 'World leaders have agreed to ambitious new targets for reducing carbon emissions, marking a historic moment in the fight against climate change.',
         imageUrl: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=800&h=600&fit=crop',
-        sourceName: 'Global News Network',
+        sourceName: 'TechCrunch',
         publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
         url: 'https://example.com/article1',
         isRead: false,
@@ -322,7 +324,7 @@ export class NewsService {
         title: 'Tech Giant Announces Revolutionary AI Breakthrough',
         description: 'The company\'s latest artificial intelligence system demonstrates unprecedented capabilities in natural language understanding and generation.',
         imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop',
-        sourceName: 'Tech Today',
+        sourceName: 'The Verge',
         publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
         url: 'https://example.com/article2',
         isRead: false,
@@ -336,7 +338,7 @@ export class NewsService {
         title: 'Local Community Rallies to Support New Education Initiative',
         description: 'Residents come together to fund programs aimed at improving educational opportunities for underserved students in the district.',
         imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop',
-        sourceName: 'Community Voice',
+        sourceName: 'Hacker News',
         publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
         url: 'https://example.com/article3',
         isRead: false,
@@ -350,7 +352,7 @@ export class NewsService {
         title: 'Stock Markets Show Strong Recovery After Turbulent Week',
         description: 'Major indices close higher as investors regain confidence following positive economic indicators and corporate earnings reports.',
         imageUrl: '',
-        sourceName: 'Financial Times',
+        sourceName: 'TechCrunch',
         publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         url: 'https://example.com/article4',
         isRead: false,
@@ -364,7 +366,7 @@ export class NewsService {
         title: 'Medical Researchers Make Breakthrough in Cancer Treatment',
         description: 'New therapy shows promising results in clinical trials, offering hope to patients with previously untreatable forms of the disease.',
         imageUrl: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=600&fit=crop',
-        sourceName: 'Health Journal',
+        sourceName: 'The Verge',
         publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
         url: 'https://example.com/article5',
         isRead: false,
@@ -378,7 +380,7 @@ export class NewsService {
         title: 'Championship Game Delivers Historic Upset Victory',
         description: 'Underdog team defeats favorites in thrilling overtime finish, claiming their first title in franchise history.',
         imageUrl: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=600&fit=crop',
-        sourceName: 'Sports Network',
+        sourceName: 'TechCrunch',
         publishedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
         url: 'https://example.com/article6',
         isRead: false,
@@ -391,9 +393,25 @@ export class NewsService {
   }
 
   loadMockData(): void {
-    const mockArticles = this.getMockArticles();
+    // Get enabled sources
+    const enabledSources = this.sourceManagementService.getEnabledSources();
+    
+    // If no enabled sources, show empty state
+    if (enabledSources.length === 0) {
+      this.allArticles.set([]);
+      this.lastFetchTimestamp.set(new Date());
+      return;
+    }
 
-    const articlesWithPersistedState = mockArticles.map(article => {
+    // Filter mock articles to only show those from enabled sources
+    const mockArticles = this.getMockArticles();
+    const sourceNames = new Set(enabledSources.map(s => s.name));
+    
+    const filteredArticles = mockArticles.filter(article => 
+      sourceNames.has(article.sourceName)
+    );
+
+    const articlesWithPersistedState = filteredArticles.map(article => {
       const persistedState = this.persistenceService.getArticleState(article.id);
       if (persistedState) {
         return {
