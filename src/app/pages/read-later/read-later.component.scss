@@ -3,7 +3,6 @@
 .read-later-container {
   min-height: 100vh;
   background-color: var(--color-bg-page);
-  padding: 2rem;
 }
 
 .read-later-header {
@@ -204,7 +203,7 @@
   align-items: center;
   gap: 0.75rem;
 
-  [data-theme="dark"] & {
+  [data-theme='dark'] & {
     color: var(--color-text-primary);
     font-weight: 500;
   }
@@ -296,10 +295,6 @@
 }
 
 @media (max-width: 768px) {
-  .read-later-container {
-    padding: 1rem;
-  }
-
   .read-later-header {
     flex-direction: column;
     align-items: flex-start;

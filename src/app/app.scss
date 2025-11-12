@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;600;700&family=Lato:wght@400;600;700&display=swap');
 
 .app-container {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--color-bg-page);
+  overflow: hidden;
 }
 
 .app-header {
@@ -25,6 +26,8 @@
   margin: 0 auto;
   gap: 2rem;
   padding: 2rem;
+  align-items: flex-start;
+  overflow: hidden;
 }
 
 .app-sidebar {
@@ -33,6 +36,27 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border-default);
+    border-radius: 3px;
+
+    &:hover {
+      background: var(--color-text-tertiary);
+    }
+  }
 }
 
 .sidebar-section {
@@ -40,11 +64,6 @@
   border: 1px solid var(--color-border-default);
   border-radius: 8px;
   padding: 1.5rem;
-
-  &:first-child {
-    position: sticky;
-    top: calc(80px + 2rem);
-  }
 }
 
 .sidebar-title {
@@ -409,6 +428,28 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border-default);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-text-tertiary);
+    }
+  }
 }
 
 .news-feed {
@@ -609,15 +650,30 @@
     justify-content: center;
   }
 
+  .app-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
   .app-content {
     flex-direction: column;
     padding: 1rem;
     gap: 1rem;
+    overflow: visible;
   }
 
   .app-sidebar {
     width: 100%;
     order: -1;
+    height: auto;
+    overflow-y: visible;
+  }
+
+  .app-main {
+    height: auto;
+    overflow-y: visible;
+    padding-right: 0;
   }
 
   .sidebar-section {
