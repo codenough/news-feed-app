@@ -28,9 +28,11 @@ export class NewsService {
 
   currentFilter = signal<FilterType>('all');
   currentSortOrder = signal<SortOrder>('desc');
+  searchQuery = signal<string>('');
 
   articles$ = computed(() => {
-    return this.filterArticles(this.allArticles(), this.currentFilter());
+    const filtered = this.filterArticles(this.allArticles(), this.currentFilter());
+    return this.searchArticles(filtered, this.searchQuery());
   });
 
   lastFetchTimestamp = signal<Date | null>(null);
@@ -105,6 +107,10 @@ export class NewsService {
     this.currentFilter.set(filter);
   }
 
+  setSearchQuery(query: string): void {
+    this.searchQuery.set(query);
+  }
+
   filterArticles(articles: NewsArticle[], filter: FilterType): NewsArticle[] {
     switch (filter) {
       case 'unread':
@@ -117,6 +123,19 @@ export class NewsService {
       default:
         return articles;
     }
+  }
+
+  searchArticles(articles: NewsArticle[], query: string): NewsArticle[] {
+    if (!query || query.trim() === '') {
+      return articles;
+    }
+
+    const lowerQuery = query.toLowerCase().trim();
+    return articles.filter(article => {
+      const titleMatch = article.title.toLowerCase().includes(lowerQuery);
+      const descriptionMatch = article.description.toLowerCase().includes(lowerQuery);
+      return titleMatch || descriptionMatch;
+    });
   }
 
   toggleBookmark(articleId: string): void {

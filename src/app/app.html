@@ -2,6 +2,37 @@
   <header class="app-header">
     <div class="header-content">
       <h1 class="app-title">{{ title() }}</h1>
+
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search articles..."
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+            aria-label="Search articles by title or description"
+          />
+          @if (searchQuery()) {
+            <button
+              type="button"
+              class="search-clear-btn"
+              (click)="onSearchClear()"
+              aria-label="Clear search"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          }
+        </div>
+      </div>
+
       <div class="header-actions">
         <div class="filter-controls">
           <button
@@ -138,6 +169,36 @@
       <div class="loading-container">
         <div class="loading-spinner"></div>
         <p class="loading-text">Loading articles...</p>
+      </div>
+    }
+
+    @if (!isLoading() && !error() && articles().length === 0) {
+      <div class="no-results-container">
+        <svg class="no-results-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+          <line x1="11" y1="8" x2="11" y2="14"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+        <h2 class="no-results-title">No articles found</h2>
+        <p class="no-results-message">
+          @if (searchQuery()) {
+            No articles match your search "<strong>{{ searchQuery() }}</strong>".
+          } @else if (currentFilter() === 'unread') {
+            You have no unread articles.
+          } @else if (currentFilter() === 'read') {
+            You have no read articles yet.
+          } @else if (currentFilter() === 'bookmarked') {
+            You haven't bookmarked any articles yet.
+          } @else {
+            No articles available at the moment.
+          }
+        </p>
+        @if (searchQuery() || currentFilter() !== 'all') {
+          <button type="button" class="clear-filters-btn" (click)="onClearFilters()">
+            Clear filters
+          </button>
+        }
       </div>
     }
 

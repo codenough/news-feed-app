@@ -23,6 +23,7 @@ export class App implements OnInit {
   protected viewMode = this.preferencesService.viewMode;
   protected sortOrder = this.preferencesService.sortOrder;
   protected currentFilter = this.preferencesService.currentFilter;
+  protected searchQuery = this.newsService.searchQuery;
 
   protected articles = this.newsService.articles$;
 
@@ -89,6 +90,20 @@ export class App implements OnInit {
 
   protected toggleViewMode(): void {
     this.preferencesService.toggleViewMode();
+  }
+
+  protected onSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.newsService.setSearchQuery(input.value);
+  }
+
+  protected onSearchClear(): void {
+    this.newsService.setSearchQuery('');
+  }
+
+  protected onClearFilters(): void {
+    this.newsService.setSearchQuery('');
+    this.onFilterChange('all');
   }
 
   protected getFormattedTimestamp(): string {
