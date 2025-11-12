@@ -6,6 +6,7 @@ import { ThemeToggleComponent } from './components/theme-toggle.component';
 import { DateRangeFilterComponent, DateRange } from './components/date-range-filter.component';
 import { NewsService, SortOrder } from './services/news.service';
 import { UserPreferencesService, FilterType } from './services/user-preferences.service';
+import { ArticlePersistenceService } from './services/article-persistence.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -32,6 +33,7 @@ export class App implements OnInit {
 
   private newsService = inject(NewsService);
   private preferencesService = inject(UserPreferencesService);
+  private persistenceService = inject(ArticlePersistenceService);
   private router = inject(Router);
 
   protected viewMode = this.preferencesService.viewMode;
@@ -47,10 +49,24 @@ export class App implements OnInit {
   protected error = this.newsService.error;
   protected lastFetchTimestamp = this.newsService.lastFetchTimestamp;
 
+  // Signal to track external articles count for reactivity
+  private externalArticlesCount = signal(0);
+
   ngOnInit(): void {
     this.newsService.setSortOrder(this.sortOrder());
     this.newsService.setFilter(this.currentFilter());
     this.newsService.loadMockData();
+    this.updateExternalArticlesCount();
+
+    // Listen for custom event when external articles change
+    window.addEventListener('external-articles-changed', () => {
+      this.updateExternalArticlesCount();
+    });
+  }
+
+  private updateExternalArticlesCount(): void {
+    const externalArticles = this.persistenceService.getExternalArticlesList();
+    this.externalArticlesCount.set(externalArticles.length);
   }
 
   protected onFilterChange(filter: FilterType): void {
@@ -118,10 +134,14 @@ export class App implements OnInit {
   }
 
   protected readLaterCount = computed(() => {
-    return this.articles().filter(article => article.isReadLater && !article.isSkipped).length;
+    const internalCount = this.articles().filter(article => article.isReadLater && !article.isSkipped).length;
+    const externalCount = this.externalArticlesCount();
+    return internalCount + externalCount;
   });
 
   protected navigateToReadLater(): void {
     this.router.navigate(['/read-later']);
+    // Update count when navigating (in case user is coming back)
+    setTimeout(() => this.updateExternalArticlesCount(), 100);
   }
 }
