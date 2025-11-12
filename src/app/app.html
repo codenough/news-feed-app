@@ -127,6 +127,18 @@
         <div class="header-actions-right">
           <button
             nz-button
+            nzType="default"
+            nzSize="default"
+            routerLink="/admin"
+            aria-label="Admin Dashboard"
+            title="Admin Dashboard"
+          >
+            <span nz-icon nzType="setting" nzTheme="outline"></span>
+            <span class="btn-label">Admin</span>
+          </button>
+
+          <button
+            nz-button
             nzSize="default"
             nzShape="circle"
             (click)="toggleViewMode()"

@@ -1,7 +1,7 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { ThemeToggleComponent } from './components/theme-toggle.component';
 import { DateRangeFilterComponent, DateRange } from './components/date-range-filter.component';
 import { NewsService, SortOrder } from './services/news.service';
@@ -18,6 +18,7 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
     CommonModule,
     FormsModule,
     RouterOutlet,
+    RouterModule,
     ThemeToggleComponent,
     DateRangeFilterComponent,
     NzIconModule,

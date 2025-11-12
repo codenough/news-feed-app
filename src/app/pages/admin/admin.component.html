@@ -1,0 +1,193 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <div class="header-left">
+      <a routerLink="/" class="back-btn" nz-button nzType="text">
+        <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+        <span>Back to Feed</span>
+      </a>
+      <h1 class="page-title">
+        <span nz-icon nzType="setting" nzTheme="outline" class="title-icon"></span>
+        Admin Dashboard
+      </h1>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="primary" (click)="showAddModal()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add Source
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-content">
+    <div class="sources-section">
+      <div class="section-header">
+        <h2 class="section-title">News Sources</h2>
+        <p class="section-description">
+          Manage RSS feed sources for the news aggregator
+        </p>
+      </div>
+
+      <nz-table
+        #sourcesTable
+        [nzData]="sources()"
+        [nzShowPagination]="false"
+        class="sources-table"
+      >
+        <thead>
+          <tr>
+            <th>Source Name</th>
+            <th>Feed URL</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+            <th nzWidth="200px">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let source of sourcesTable.data">
+            <td>
+              <strong>{{ source.name }}</strong>
+            </td>
+            <td>
+              <span class="url-text">{{ source.url }}</span>
+            </td>
+            <td>
+              <span
+                class="status-badge"
+                [class.status-badge--enabled]="source.enabled"
+                [class.status-badge--disabled]="!source.enabled"
+              >
+                <span
+                  nz-icon
+                  [nzType]="source.enabled ? 'check-circle' : 'close-circle'"
+                  nzTheme="fill"
+                ></span>
+                {{ source.enabled ? 'Enabled' : 'Disabled' }}
+              </span>
+            </td>
+            <td>
+              <span class="date-text">
+                {{ source.lastUpdated | date: 'MMM d, y, h:mm a' }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button
+                  nz-button
+                  nzType="default"
+                  nzSize="small"
+                  (click)="showEditModal(source)"
+                  nz-tooltip
+                  nzTooltipTitle="Edit source"
+                >
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                </button>
+                <button
+                  nz-button
+                  nzType="default"
+                  nzSize="small"
+                  (click)="toggleSource(source)"
+                  nz-tooltip
+                  [nzTooltipTitle]="source.enabled ? 'Disable source' : 'Enable source'"
+                >
+                  <span
+                    nz-icon
+                    [nzType]="source.enabled ? 'eye-invisible' : 'eye'"
+                    nzTheme="outline"
+                  ></span>
+                </button>
+                <button
+                  nz-button
+                  nzType="default"
+                  nzSize="small"
+                  nzDanger
+                  (click)="showDeleteConfirm(source)"
+                  nz-tooltip
+                  nzTooltipTitle="Delete source"
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+
+      <div *ngIf="sources().length === 0" class="empty-state">
+        <span nz-icon nzType="inbox" nzTheme="outline" class="empty-icon"></span>
+        <h3 class="empty-title">No Sources</h3>
+        <p class="empty-message">
+          Add your first news source to start aggregating content
+        </p>
+        <button nz-button nzType="primary" (click)="showAddModal()">
+          <span nz-icon nzType="plus" nzTheme="outline"></span>
+          Add Source
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nz-modal
+  [nzVisible]="isModalVisible()"
+  [nzTitle]="isEditMode() ? 'Edit Source' : 'Add Source'"
+  [nzFooter]="modalFooter"
+  (nzOnCancel)="handleCancel()"
+  nzWidth="600px"
+>
+  <ng-container *nzModalContent>
+    <div class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="sourceName">
+          Source Name <span class="required">*</span>
+        </label>
+        <input
+          nz-input
+          id="sourceName"
+          placeholder="e.g., TechCrunch, The Verge"
+          [(ngModel)]="sourceName"
+          (ngModelChange)="sourceName.set($event)"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="sourceUrl">
+          RSS Feed URL <span class="required">*</span>
+        </label>
+        <input
+          nz-input
+          id="sourceUrl"
+          type="url"
+          placeholder="https://example.com/feed.xml"
+          [(ngModel)]="sourceUrl"
+          (ngModelChange)="sourceUrl.set($event)"
+        />
+        <span class="form-hint">Enter the full RSS or Atom feed URL</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Status
+        </label>
+        <div class="switch-wrapper">
+          <nz-switch
+            [(ngModel)]="sourceEnabled"
+            (ngModelChange)="sourceEnabled.set($event)"
+          ></nz-switch>
+          <span class="switch-label">
+            {{ sourceEnabled() ? 'Enabled' : 'Disabled' }}
+          </span>
+        </div>
+        <span class="form-hint">
+          Disabled sources will not fetch new articles
+        </span>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+    <button nz-button nzType="primary" (click)="handleOk()">
+      {{ isEditMode() ? 'Save Changes' : 'Add Source' }}
+    </button>
+  </ng-template>
+</nz-modal>

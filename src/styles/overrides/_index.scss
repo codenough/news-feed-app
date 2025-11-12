@@ -205,12 +205,37 @@
 // Tooltip
 .ant-tooltip {
   &-inner {
-    background-color: var(--color-neutral-dark-text);
+    background-color: var(--color-neutral-slate);
     color: var(--color-neutral-white);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    [data-theme="dark"] & {
+      background-color: rgba(42, 42, 42, 0.95);
+      color: var(--color-text-primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  &-arrow {
+    &::before {
+      background: var(--color-neutral-slate);
+
+      [data-theme="dark"] & {
+        background: rgba(42, 42, 42, 0.95);
+      }
+    }
   }
 
   &-arrow-content {
-    background-color: var(--color-neutral-dark-text);
+    background-color: var(--color-neutral-slate);
+
+    [data-theme="dark"] & {
+      background-color: rgba(42, 42, 42, 0.95);
+    }
   }
 }
 

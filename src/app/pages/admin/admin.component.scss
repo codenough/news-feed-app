@@ -1,0 +1,303 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;600;700&family=Lato:wght@400;600;700&display=swap');
+
+.admin-container {
+  min-height: 100vh;
+  background-color: var(--color-bg-page);
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-brand-primary);
+  }
+
+  span[nz-icon] {
+    font-size: 16px;
+  }
+}
+
+.page-title {
+  font-family: 'Merriweather', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .title-icon {
+    font-size: 1.75rem;
+    color: var(--color-brand-primary);
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.sources-section {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-family: 'Merriweather', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.section-description {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.sources-table {
+  ::ng-deep {
+    .ant-table {
+      background-color: transparent;
+    }
+
+    .ant-table-thead > tr > th {
+      background-color: var(--color-bg-page);
+      color: var(--color-text-secondary);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-bottom: 2px solid var(--color-border-default);
+    }
+
+    .ant-table-tbody > tr > td {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.875rem;
+      color: var(--color-text-primary);
+      border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background-color: var(--color-bg-page);
+    }
+  }
+}
+
+.url-text {
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  word-break: break-all;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--enabled {
+    background-color: rgba(82, 196, 26, 0.1);
+    color: #52c41a;
+
+    span[nz-icon] {
+      color: #52c41a;
+    }
+  }
+
+  &--disabled {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: var(--color-text-tertiary);
+
+    [data-theme="dark"] & {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    span[nz-icon] {
+      color: var(--color-text-tertiary);
+    }
+  }
+
+  span[nz-icon] {
+    font-size: 14px;
+  }
+}
+
+.date-text {
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 4rem;
+    color: var(--color-icon-default);
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    font-family: 'Merriweather', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .empty-message {
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 2rem 0;
+    max-width: 500px;
+    line-height: 1.6;
+  }
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+
+  .required {
+    color: var(--color-brand-accent);
+  }
+}
+
+.form-hint {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  margin-top: 0.25rem;
+}
+
+.switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.switch-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+
+
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+
+    .title-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  .sources-section {
+    padding: 1rem;
+  }
+
+  .sources-table {
+    ::ng-deep {
+      .ant-table {
+        font-size: 0.75rem;
+      }
+
+      .ant-table-thead > tr > th,
+      .ant-table-tbody > tr > td {
+        padding: 0.5rem;
+      }
+    }
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+
+    button {
+      width: 100%;
+    }
+  }
+}
