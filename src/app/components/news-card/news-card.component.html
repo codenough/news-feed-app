@@ -1,13 +1,13 @@
-<article 
-  class="news-card" 
+<article
+  class="news-card"
   [class.news-card--list]="viewMode === 'list'"
   [class.news-card--read]="article.isRead"
   (click)="onCardClick($event)"
 >
   <div class="news-card__image-container">
     @if (article.imageUrl) {
-      <img 
-        [src]="article.imageUrl" 
+      <img
+        [src]="article.imageUrl"
         [alt]="article.title"
         class="news-card__image"
         loading="lazy"
@@ -28,7 +28,7 @@
 
   <div class="news-card__content">
     <h3 class="news-card__title">{{ article.title }}</h3>
-    
+
     @if (article.description) {
       <p class="news-card__snippet">{{ article.description }}</p>
     }

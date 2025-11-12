@@ -57,10 +57,10 @@ export class NewsCardComponent {
     } else if (diffInDays < 7) {
       return `${diffInDays}d ago`;
     } else {
-      return publishedDate.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: publishedDate.getFullYear() !== now.getFullYear() ? 'numeric' : undefined 
+      return publishedDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: publishedDate.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
       });
     }
   }
