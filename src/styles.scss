@@ -1,1 +1,428 @@
-/* You can add global styles to this file, and also import other style files */
+/* ==========================================================================
+   Global Color Palette & Theme System
+   ========================================================================== */
+
+:root {
+  /* --- Primary Brand Colors --- */
+  --color-brand-primary: #0A74DA;
+  --color-brand-accent: #F05C3B;
+
+  /* --- Neutral/Greyscale Colors --- */
+  --color-neutral-white: #FFFFFF;
+  --color-neutral-mist: #F2F4F7;
+  --color-neutral-slate: #525D6B;
+  --color-neutral-dark-text: #212529;
+  --color-neutral-light-text: #6c757d;
+
+  /* --- Semantic UI Roles --- */
+  /* Backgrounds */
+  --color-bg-page: var(--color-neutral-white);
+  --color-bg-card: var(--color-neutral-mist);
+  --color-bg-navbar: var(--color-neutral-white);
+  --color-bg-sidebar: var(--color-neutral-white);
+  --color-bg-action-primary: var(--color-brand-primary);
+  --color-bg-breaking-news: var(--color-brand-accent);
+
+  /* Text Colors */
+  --color-text-primary: var(--color-neutral-dark-text);
+  --color-text-secondary: var(--color-neutral-slate);
+  --color-text-tertiary: var(--color-neutral-light-text);
+  --color-text-on-primary: var(--color-neutral-white);
+  --color-text-on-accent: var(--color-neutral-white);
+  --color-text-read: var(--color-neutral-light-text);
+
+  /* Border & Dividers */
+  --color-border-default: var(--color-neutral-mist);
+  --color-border-card-hover: var(--color-brand-primary);
+
+  /* Icons */
+  --color-icon-default: var(--color-neutral-slate);
+  --color-icon-active: var(--color-brand-primary);
+  --color-icon-highlight: var(--color-brand-accent);
+
+  /* States */
+  --color-state-active: var(--color-brand-primary);
+  --color-state-hover: color-mix(in srgb, var(--color-brand-primary) 85%, black);
+  --color-state-focus: color-mix(in srgb, var(--color-brand-primary) 70%, white);
+  --color-state-unread-indicator: var(--color-brand-accent);
+}
+
+/* ==========================================================================
+   Dark Mode Theme
+   ========================================================================== */
+
+[data-theme="dark"] {
+  /* --- Primary Brand Colors (adjusted for dark context) --- */
+  --color-brand-primary: #5BA7ED;
+  --color-brand-accent: #FF7B5C;
+
+  /* --- Neutral/Greyscale Colors for Dark Mode --- */
+  --color-neutral-white: #FFFFFF;
+  --color-neutral-mist: #2A2A2A;
+  --color-neutral-slate: #8899AA;
+  --color-neutral-dark-text: #E0E0E0;
+  --color-neutral-light-text: #B0B0B0;
+  --color-neutral-page-bg-dark: #1A1A1A;
+
+  /* --- Semantic UI Roles for Dark Mode --- */
+  /* Backgrounds */
+  --color-bg-page: var(--color-neutral-page-bg-dark);
+  --color-bg-card: var(--color-neutral-mist);
+  --color-bg-navbar: var(--color-neutral-page-bg-dark);
+  --color-bg-sidebar: var(--color-neutral-page-bg-dark);
+  --color-bg-action-primary: var(--color-brand-primary);
+  --color-bg-breaking-news: var(--color-brand-accent);
+
+  /* Text Colors */
+  --color-text-primary: var(--color-neutral-dark-text);
+  --color-text-secondary: var(--color-neutral-slate);
+  --color-text-tertiary: var(--color-neutral-light-text);
+  --color-text-on-primary: var(--color-neutral-white);
+  --color-text-on-accent: var(--color-neutral-white);
+  --color-text-read: var(--color-neutral-slate);
+
+  /* Border & Dividers */
+  --color-border-default: #333333;
+  --color-border-card-hover: var(--color-brand-primary);
+
+  /* Icons */
+  --color-icon-default: var(--color-neutral-slate);
+  --color-icon-active: var(--color-brand-primary);
+  --color-icon-highlight: var(--color-brand-accent);
+
+  /* States */
+  --color-state-active: var(--color-brand-primary);
+  --color-state-hover: color-mix(in srgb, var(--color-brand-primary) 85%, white);
+  --color-state-focus: color-mix(in srgb, var(--color-brand-primary) 70%, black);
+  --color-state-unread-indicator: var(--color-brand-accent);
+}
+
+/* ==========================================================================
+   NG-ZORRO Component Customizations
+   ========================================================================== */
+
+/* Apply global background and text colors */
+body {
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Button Customizations */
+.ant-btn-primary {
+  background-color: var(--color-bg-action-primary);
+  border-color: var(--color-bg-action-primary);
+  color: var(--color-text-on-primary);
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-state-hover);
+    border-color: var(--color-state-hover);
+  }
+}
+
+.ant-btn-default {
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+
+  &:hover,
+  &:focus {
+    border-color: var(--color-brand-primary);
+    color: var(--color-brand-primary);
+  }
+}
+
+/* Card Customizations */
+.ant-card {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: var(--color-border-card-hover);
+    box-shadow: 0 2px 8px rgba(10, 116, 218, 0.15);
+  }
+
+  .ant-card-head {
+    border-bottom-color: var(--color-border-default);
+    color: var(--color-text-primary);
+  }
+
+  .ant-card-meta-title {
+    color: var(--color-text-primary);
+  }
+
+  .ant-card-meta-description {
+    color: var(--color-text-secondary);
+  }
+}
+
+/* Menu Customizations */
+.ant-menu {
+  background-color: var(--color-bg-navbar);
+  color: var(--color-text-primary);
+
+  .ant-menu-item {
+    color: var(--color-text-primary);
+
+    &:hover {
+      color: var(--color-brand-primary);
+    }
+
+    &-selected {
+      background-color: var(--color-state-focus);
+      color: var(--color-state-active);
+    }
+  }
+
+  .ant-menu-submenu-title {
+    color: var(--color-text-primary);
+
+    &:hover {
+      color: var(--color-brand-primary);
+    }
+  }
+}
+
+/* Layout Customizations */
+.ant-layout {
+  background-color: var(--color-bg-page);
+}
+
+.ant-layout-header {
+  background-color: var(--color-bg-navbar);
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.ant-layout-sider {
+  background-color: var(--color-bg-sidebar);
+}
+
+/* Badge Customizations */
+.ant-badge-count {
+  background-color: var(--color-state-unread-indicator);
+}
+
+.ant-badge-dot {
+  background-color: var(--color-state-unread-indicator);
+}
+
+/* Tag Customizations */
+.ant-tag {
+  border-color: var(--color-border-default);
+  color: var(--color-text-secondary);
+}
+
+.ant-tag-blue {
+  background-color: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+}
+
+.ant-tag-red {
+  background-color: var(--color-brand-accent);
+  border-color: var(--color-brand-accent);
+  color: var(--color-text-on-accent);
+}
+
+/* List Customizations */
+.ant-list {
+  .ant-list-item {
+    border-bottom-color: var(--color-border-default);
+    color: var(--color-text-primary);
+
+    &:hover {
+      background-color: var(--color-bg-card);
+    }
+  }
+
+  .ant-list-item-meta-title {
+    color: var(--color-text-primary);
+
+    a {
+      color: var(--color-text-primary);
+
+      &:hover {
+        color: var(--color-brand-primary);
+      }
+    }
+  }
+
+  .ant-list-item-meta-description {
+    color: var(--color-text-secondary);
+  }
+}
+
+/* Input Customizations */
+.ant-input,
+.ant-input-affix-wrapper {
+  background-color: var(--color-bg-page);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+
+  &:hover {
+    border-color: var(--color-brand-primary);
+  }
+
+  &:focus,
+  &-focused {
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 0 0 2px var(--color-state-focus);
+  }
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+}
+
+/* Dropdown Customizations */
+.ant-dropdown-menu {
+  background-color: var(--color-bg-card);
+
+  .ant-dropdown-menu-item {
+    color: var(--color-text-primary);
+
+    &:hover {
+      background-color: var(--color-state-focus);
+      color: var(--color-brand-primary);
+    }
+  }
+}
+
+/* Modal Customizations */
+.ant-modal-content {
+  background-color: var(--color-bg-card);
+
+  .ant-modal-header {
+    background-color: var(--color-bg-card);
+    border-bottom-color: var(--color-border-default);
+
+    .ant-modal-title {
+      color: var(--color-text-primary);
+    }
+  }
+
+  .ant-modal-body {
+    color: var(--color-text-primary);
+  }
+
+  .ant-modal-footer {
+    border-top-color: var(--color-border-default);
+  }
+
+  .ant-modal-close {
+    color: var(--color-text-secondary);
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+/* Tabs Customizations */
+.ant-tabs {
+  .ant-tabs-tab {
+    color: var(--color-text-secondary);
+
+    &:hover {
+      color: var(--color-brand-primary);
+    }
+
+    &-active {
+      color: var(--color-brand-primary);
+
+      .ant-tabs-tab-btn {
+        color: var(--color-brand-primary);
+      }
+    }
+  }
+
+  .ant-tabs-ink-bar {
+    background-color: var(--color-brand-primary);
+  }
+}
+
+/* Pagination Customizations */
+.ant-pagination {
+  .ant-pagination-item {
+    background-color: var(--color-bg-card);
+    border-color: var(--color-border-default);
+
+    a {
+      color: var(--color-text-primary);
+    }
+
+    &:hover {
+      border-color: var(--color-brand-primary);
+
+      a {
+        color: var(--color-brand-primary);
+      }
+    }
+
+    &-active {
+      background-color: var(--color-brand-primary);
+      border-color: var(--color-brand-primary);
+
+      a {
+        color: var(--color-text-on-primary);
+      }
+    }
+  }
+
+  .ant-pagination-prev,
+  .ant-pagination-next {
+    .ant-pagination-item-link {
+      background-color: var(--color-bg-card);
+      border-color: var(--color-border-default);
+      color: var(--color-text-primary);
+
+      &:hover {
+        border-color: var(--color-brand-primary);
+        color: var(--color-brand-primary);
+      }
+    }
+  }
+}
+
+/* Skeleton Customizations */
+.ant-skeleton-element {
+  .ant-skeleton-button,
+  .ant-skeleton-avatar,
+  .ant-skeleton-input {
+    background: linear-gradient(
+      90deg,
+      var(--color-neutral-mist) 25%,
+      var(--color-border-default) 37%,
+      var(--color-neutral-mist) 63%
+    );
+  }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.breaking-news {
+  background-color: var(--color-bg-breaking-news);
+  color: var(--color-text-on-accent);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.unread-indicator {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-state-unread-indicator);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.read-article {
+  color: var(--color-text-read);
+  opacity: 0.7;
+}
