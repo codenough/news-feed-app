@@ -1,10 +1,11 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 import { NewsArticle } from '../models/news-article.interface';
 import { ArticlePersistenceService } from './article-persistence.service';
 
 export type SortOrder = 'desc' | 'asc';
+export type FilterType = 'all' | 'unread' | 'read' | 'bookmarked';
 
 export interface FetchArticlesParams {
   sortBy?: 'publishedAt' | 'title';
@@ -23,13 +24,18 @@ export class NewsService {
   private readonly API_BASE_URL = '/api/news';
 
   private articlesSubject = new BehaviorSubject<NewsArticle[]>([]);
-  articles$ = this.articlesSubject.asObservable();
+  private allArticles = signal<NewsArticle[]>([]);
+
+  currentFilter = signal<FilterType>('all');
+  currentSortOrder = signal<SortOrder>('desc');
+
+  articles$ = computed(() => {
+    return this.filterArticles(this.allArticles(), this.currentFilter());
+  });
 
   lastFetchTimestamp = signal<Date | null>(null);
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
-
-  currentSortOrder = signal<SortOrder>('desc');
 
   private persistenceService = inject(ArticlePersistenceService);
 
@@ -95,14 +101,32 @@ export class NewsService {
     });
   }
 
+  setFilter(filter: FilterType): void {
+    this.currentFilter.set(filter);
+  }
+
+  filterArticles(articles: NewsArticle[], filter: FilterType): NewsArticle[] {
+    switch (filter) {
+      case 'unread':
+        return articles.filter(article => !article.isRead);
+      case 'read':
+        return articles.filter(article => article.isRead);
+      case 'bookmarked':
+        return articles.filter(article => article.isBookmarked);
+      case 'all':
+      default:
+        return articles;
+    }
+  }
+
   toggleBookmark(articleId: string): void {
-    const articles = this.articlesSubject.value;
+    const articles = this.allArticles();
     const updatedArticles = articles.map(article =>
       article.id === articleId
         ? { ...article, isBookmarked: !article.isBookmarked }
         : article
     );
-    this.articlesSubject.next(updatedArticles);
+    this.allArticles.set(updatedArticles);
 
     const article = updatedArticles.find(a => a.id === articleId);
     if (article) {
@@ -111,13 +135,13 @@ export class NewsService {
   }
 
   toggleReadLater(articleId: string): void {
-    const articles = this.articlesSubject.value;
+    const articles = this.allArticles();
     const updatedArticles = articles.map(article =>
       article.id === articleId
         ? { ...article, isReadLater: !article.isReadLater }
         : article
     );
-    this.articlesSubject.next(updatedArticles);
+    this.allArticles.set(updatedArticles);
 
     const article = updatedArticles.find(a => a.id === articleId);
     if (article) {
@@ -126,25 +150,25 @@ export class NewsService {
   }
 
   markAsRead(articleId: string): void {
-    const articles = this.articlesSubject.value;
+    const articles = this.allArticles();
     const updatedArticles = articles.map(article =>
       article.id === articleId
         ? { ...article, isRead: true }
         : article
     );
-    this.articlesSubject.next(updatedArticles);
+    this.allArticles.set(updatedArticles);
 
     this.persistenceService.saveArticleState(articleId, { isRead: true });
   }
 
   toggleReadStatus(articleId: string): void {
-    const articles = this.articlesSubject.value;
+    const articles = this.allArticles();
     const updatedArticles = articles.map(article =>
       article.id === articleId
         ? { ...article, isRead: !article.isRead }
         : article
     );
-    this.articlesSubject.next(updatedArticles);
+    this.allArticles.set(updatedArticles);
 
     const article = updatedArticles.find(a => a.id === articleId);
     if (article) {
@@ -153,25 +177,25 @@ export class NewsService {
   }
 
   skipArticle(articleId: string): void {
-    const articles = this.articlesSubject.value;
+    const articles = this.allArticles();
     const updatedArticles = articles.map(article =>
       article.id === articleId
         ? { ...article, isSkipped: true }
         : article
     );
-    this.articlesSubject.next(updatedArticles);
+    this.allArticles.set(updatedArticles);
 
     this.persistenceService.saveArticleState(articleId, { isSkipped: true });
   }
 
   undoSkip(articleId: string): void {
-    const articles = this.articlesSubject.value;
+    const articles = this.allArticles();
     const updatedArticles = articles.map(article =>
       article.id === articleId
         ? { ...article, isSkipped: false }
         : article
     );
-    this.articlesSubject.next(updatedArticles);
+    this.allArticles.set(updatedArticles);
 
     this.persistenceService.saveArticleState(articleId, { isSkipped: false });
   }
@@ -283,7 +307,7 @@ export class NewsService {
     });
 
     const sortedArticles = this.sortArticlesLocally(articlesWithPersistedState, this.currentSortOrder());
-    this.articlesSubject.next(sortedArticles);
+    this.allArticles.set(sortedArticles);
     this.lastFetchTimestamp.set(new Date());
   }
 }

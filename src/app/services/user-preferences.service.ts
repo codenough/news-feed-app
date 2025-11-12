@@ -2,10 +2,12 @@ import { Injectable, signal } from '@angular/core';
 import { SortOrder } from './news.service';
 
 export type ViewMode = 'grid' | 'list';
+export type FilterType = 'all' | 'unread' | 'read' | 'bookmarked';
 
 export interface UserPreferences {
   viewMode: ViewMode;
   sortOrder: SortOrder;
+  currentFilter: FilterType;
   lastModified: number;
 }
 
@@ -17,6 +19,7 @@ export class UserPreferencesService {
 
   viewMode = signal<ViewMode>('grid');
   sortOrder = signal<SortOrder>('desc');
+  currentFilter = signal<FilterType>('all');
 
   constructor() {
     this.loadPreferences();
@@ -30,6 +33,7 @@ export class UserPreferencesService {
       const preferences = JSON.parse(data) as UserPreferences;
       this.viewMode.set(preferences.viewMode);
       this.sortOrder.set(preferences.sortOrder);
+      this.currentFilter.set(preferences.currentFilter || 'all');
     } catch (error) {
       console.error('Error loading user preferences from localStorage:', error);
     }
@@ -40,6 +44,7 @@ export class UserPreferencesService {
       const preferences: UserPreferences = {
         viewMode: this.viewMode(),
         sortOrder: this.sortOrder(),
+        currentFilter: this.currentFilter(),
         lastModified: Date.now()
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(preferences));
@@ -68,10 +73,16 @@ export class UserPreferencesService {
     this.setSortOrder(newOrder);
   }
 
+  setFilter(filter: FilterType): void {
+    this.currentFilter.set(filter);
+    this.savePreferences();
+  }
+
   getPreferences(): UserPreferences {
     return {
       viewMode: this.viewMode(),
       sortOrder: this.sortOrder(),
+      currentFilter: this.currentFilter(),
       lastModified: Date.now()
     };
   }
@@ -79,6 +90,7 @@ export class UserPreferencesService {
   resetPreferences(): void {
     this.viewMode.set('grid');
     this.sortOrder.set('desc');
+    this.currentFilter.set('all');
     this.savePreferences();
   }
 
@@ -87,6 +99,7 @@ export class UserPreferencesService {
       localStorage.removeItem(this.STORAGE_KEY);
       this.viewMode.set('grid');
       this.sortOrder.set('desc');
+      this.currentFilter.set('all');
     } catch (error) {
       console.error('Error clearing user preferences:', error);
     }

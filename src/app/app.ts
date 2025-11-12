@@ -4,7 +4,7 @@ import { NewsCardComponent } from './components/news-card/news-card.component';
 import { ThemeToggleComponent } from './components/theme-toggle.component';
 import { NewsArticle } from './models/news-article.interface';
 import { NewsService, SortOrder } from './services/news.service';
-import { UserPreferencesService } from './services/user-preferences.service';
+import { UserPreferencesService, FilterType } from './services/user-preferences.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { MenuAction } from './components/article-menu/article-menu.component';
 
@@ -22,10 +22,9 @@ export class App implements OnInit {
 
   protected viewMode = this.preferencesService.viewMode;
   protected sortOrder = this.preferencesService.sortOrder;
+  protected currentFilter = this.preferencesService.currentFilter;
 
-  protected articles = computed(() => {
-    return this.newsService.articles$;
-  });
+  protected articles = this.newsService.articles$;
 
   protected isLoading = this.newsService.isLoading;
   protected error = this.newsService.error;
@@ -33,7 +32,13 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     this.newsService.setSortOrder(this.sortOrder());
+    this.newsService.setFilter(this.currentFilter());
     this.newsService.loadMockData();
+  }
+
+  protected onFilterChange(filter: FilterType): void {
+    this.preferencesService.setFilter(filter);
+    this.newsService.setFilter(filter);
   }
 
   protected onRefresh(): void {

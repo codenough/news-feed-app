@@ -3,6 +3,44 @@
     <div class="header-content">
       <h1 class="app-title">{{ title() }}</h1>
       <div class="header-actions">
+        <div class="filter-controls">
+          <button
+            type="button"
+            class="filter-btn"
+            [class.filter-btn--active]="currentFilter() === 'all'"
+            (click)="onFilterChange('all')"
+            aria-label="Show all articles"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            [class.filter-btn--active]="currentFilter() === 'unread'"
+            (click)="onFilterChange('unread')"
+            aria-label="Show unread articles"
+          >
+            Unread
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            [class.filter-btn--active]="currentFilter() === 'read'"
+            (click)="onFilterChange('read')"
+            aria-label="Show read articles"
+          >
+            Read
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            [class.filter-btn--active]="currentFilter() === 'bookmarked'"
+            (click)="onFilterChange('bookmarked')"
+            aria-label="Show bookmarked articles"
+          >
+            Bookmarked
+          </button>
+        </div>
         <div class="header-controls">
           <button
             type="button"
@@ -104,7 +142,7 @@
     }
 
     <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
-      @for (article of articles() | async; track article.id) {
+      @for (article of articles(); track article.id) {
         <app-news-card
           [article]="article"
           [viewMode]="viewMode()"
