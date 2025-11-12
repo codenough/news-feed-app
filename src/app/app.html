@@ -4,33 +4,31 @@
       <h1 class="app-title">{{ title() }}</h1>
 
       <div class="search-container">
-        <div class="search-input-wrapper">
-          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input
+        <nz-input-group [nzPrefix]="prefixIconSearch" [nzSuffix]="suffixIconClear">
+          <input 
+            nz-input 
             type="text"
-            class="search-input"
             placeholder="Search articles..."
-            [value]="searchQuery()"
-            (input)="onSearchInput($event)"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange($event)"
             aria-label="Search articles by title or description"
           />
+        </nz-input-group>
+        <ng-template #prefixIconSearch>
+          <span nz-icon nzType="search" nzTheme="outline"></span>
+        </ng-template>
+        <ng-template #suffixIconClear>
           @if (searchQuery()) {
-            <button
-              type="button"
-              class="search-clear-btn"
+            <span 
+              nz-icon 
+              nzType="close-circle" 
+              nzTheme="fill"
+              class="search-clear-icon"
               (click)="onSearchClear()"
               aria-label="Clear search"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
+            ></span>
           }
-        </div>
+        </ng-template>
       </div>
 
       <div class="header-actions">
@@ -185,6 +183,10 @@
             </li>
           }
         </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <app-date-range-filter (dateRangeChange)="onDateRangeChange($event)" />
       </div>
     </aside>
 

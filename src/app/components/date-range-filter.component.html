@@ -1,0 +1,40 @@
+<div class="date-range-filter">
+  <div class="filter-header">
+    <h3 class="filter-title">Date Range</h3>
+    @if (hasDateFilter) {
+      <button
+        class="clear-btn"
+        (click)="clearDates()"
+        type="button"
+        aria-label="Clear date filters">
+        Clear
+      </button>
+    }
+  </div>
+
+  <div class="date-picker-container">
+    <div class="date-input-group">
+      <label class="date-label">From</label>
+      <nz-date-picker
+        [(ngModel)]="startDate"
+        (ngModelChange)="onStartDateChange($event)"
+        nzFormat="MMM d, yyyy"
+        nzPlaceHolder="Start date"
+        [nzDisabledDate]="disableStartDate"
+        class="date-picker"
+      />
+    </div>
+
+    <div class="date-input-group">
+      <label class="date-label">To</label>
+      <nz-date-picker
+        [(ngModel)]="endDate"
+        (ngModelChange)="onEndDateChange($event)"
+        nzFormat="MMM d, yyyy"
+        nzPlaceHolder="End date"
+        [nzDisabledDate]="disableEndDate"
+        class="date-picker"
+      />
+    </div>
+  </div>
+</div>

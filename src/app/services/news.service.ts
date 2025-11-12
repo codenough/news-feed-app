@@ -15,6 +15,8 @@ export interface FetchArticlesParams {
   sources?: string[];
   category?: string;
   searchQuery?: string;
+  startDate?: Date;
+  endDate?: Date;
 }
 
 @Injectable({
@@ -30,10 +32,12 @@ export class NewsService {
   currentSortOrder = signal<SortOrder>('desc');
   searchQuery = signal<string>('');
   selectedSource = signal<string | null>(null);
+  dateRange = signal<{ startDate: Date | null; endDate: Date | null }>({ startDate: null, endDate: null });
 
   articles$ = computed(() => {
     let filtered = this.filterArticles(this.allArticles(), this.currentFilter());
     filtered = this.filterBySource(filtered, this.selectedSource());
+    filtered = this.filterByDateRange(filtered, this.dateRange());
     return this.searchArticles(filtered, this.searchQuery());
   });
 
@@ -89,6 +93,12 @@ export class NewsService {
     if (defaultParams.sources && defaultParams.sources.length > 0) {
       httpParams = httpParams.set('sources', defaultParams.sources.join(','));
     }
+    if (defaultParams.startDate) {
+      httpParams = httpParams.set('startDate', defaultParams.startDate.toISOString());
+    }
+    if (defaultParams.endDate) {
+      httpParams = httpParams.set('endDate', defaultParams.endDate.toISOString());
+    }
 
     return this.http.get<NewsArticle[]>(this.API_BASE_URL, { params: httpParams }).pipe(
       tap(articles => {
@@ -139,6 +149,10 @@ export class NewsService {
     this.selectedSource.set(source);
   }
 
+  setDateRange(startDate: Date | null, endDate: Date | null): void {
+    this.dateRange.set({ startDate, endDate });
+  }
+
   filterArticles(articles: NewsArticle[], filter: FilterType): NewsArticle[] {
     switch (filter) {
       case 'unread':
@@ -158,6 +172,39 @@ export class NewsService {
       return articles;
     }
     return articles.filter(article => article.sourceName === source);
+  }
+
+  filterByDateRange(articles: NewsArticle[], range: { startDate: Date | null; endDate: Date | null }): NewsArticle[] {
+    if (!range.startDate && !range.endDate) {
+      return articles;
+    }
+
+    return articles.filter(article => {
+      const articleDate = new Date(article.publishedAt);
+      articleDate.setHours(0, 0, 0, 0);
+
+      if (range.startDate && range.endDate) {
+        const start = new Date(range.startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(range.endDate);
+        end.setHours(23, 59, 59, 999);
+        return articleDate >= start && articleDate <= end;
+      }
+
+      if (range.startDate) {
+        const start = new Date(range.startDate);
+        start.setHours(0, 0, 0, 0);
+        return articleDate >= start;
+      }
+
+      if (range.endDate) {
+        const end = new Date(range.endDate);
+        end.setHours(23, 59, 59, 999);
+        return articleDate <= end;
+      }
+
+      return true;
+    });
   }
 
   searchArticles(articles: NewsArticle[], query: string): NewsArticle[] {

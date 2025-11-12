@@ -1,16 +1,29 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NewsCardComponent } from './components/news-card/news-card.component';
 import { ThemeToggleComponent } from './components/theme-toggle.component';
+import { DateRangeFilterComponent, DateRange } from './components/date-range-filter.component';
 import { NewsArticle } from './models/news-article.interface';
 import { NewsService, SortOrder } from './services/news.service';
 import { UserPreferencesService, FilterType } from './services/user-preferences.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { MenuAction } from './components/article-menu/article-menu.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, NewsCardComponent, ThemeToggleComponent, NzIconModule],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    NewsCardComponent, 
+    ThemeToggleComponent, 
+    DateRangeFilterComponent, 
+    NzIconModule,
+    NzInputModule,
+    NzButtonModule
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -99,6 +112,10 @@ export class App implements OnInit {
     this.newsService.setSearchQuery(input.value);
   }
 
+  protected onSearchChange(value: string): void {
+    this.newsService.setSearchQuery(value);
+  }
+
   protected onSearchClear(): void {
     this.newsService.setSearchQuery('');
   }
@@ -106,11 +123,16 @@ export class App implements OnInit {
   protected onClearFilters(): void {
     this.newsService.setSearchQuery('');
     this.newsService.setSelectedSource(null);
+    this.newsService.setDateRange(null, null);
     this.onFilterChange('all');
   }
 
   protected onSourceSelect(sourceName: string | null): void {
     this.newsService.setSelectedSource(sourceName);
+  }
+
+  protected onDateRangeChange(range: DateRange): void {
+    this.newsService.setDateRange(range.startDate, range.endDate);
   }
 
   protected getFormattedTimestamp(): string {
