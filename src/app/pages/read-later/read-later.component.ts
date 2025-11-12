@@ -40,13 +40,10 @@ export class ReadLaterComponent {
   // External articles from localStorage
   protected externalArticles = signal<ExternalArticle[]>([]);
 
-  // Combined articles list
-  protected readLaterArticles = computed(() => {
-    const internal = this.internalReadLaterArticles();
+  // Convert external articles to NewsArticle format for display
+  protected externalArticlesAsNews = computed(() => {
     const external = this.externalArticles();
-
-    // Convert external articles to NewsArticle format for display
-    const externalAsNews: NewsArticle[] = external.map(ext => ({
+    return external.map(ext => ({
       id: ext.id,
       title: ext.title,
       description: ext.description || '',
@@ -59,8 +56,11 @@ export class ReadLaterComponent {
       isReadLater: true,
       isSkipped: false
     }));
+  });
 
-    return [...externalAsNews, ...internal];
+  // Combined articles list (kept for total count)
+  protected readLaterArticles = computed(() => {
+    return [...this.externalArticlesAsNews(), ...this.internalReadLaterArticles()];
   });
 
   protected readLaterCount = computed(() => this.readLaterArticles().length);
@@ -210,16 +210,21 @@ export class ReadLaterComponent {
     this.router.navigate(['/']);
   }
 
-  protected clearAllReadLater(): void {
-    // Clear internal articles
+  protected clearExternalArticles(): void {
+    this.persistenceService.clearAllExternalArticles();
+    this.loadExternalArticles();
+    this.notifyExternalArticlesChanged();
+  }
+
+  protected clearInternalArticles(): void {
     const internalArticles = this.internalReadLaterArticles();
     internalArticles.forEach(article => {
       this.newsService.toggleReadLater(article.id);
     });
+  }
 
-    // Clear external articles
-    this.persistenceService.clearAllExternalArticles();
-    this.loadExternalArticles();
-    this.notifyExternalArticlesChanged();
+  protected clearAllReadLater(): void {
+    this.clearInternalArticles();
+    this.clearExternalArticles();
   }
 }

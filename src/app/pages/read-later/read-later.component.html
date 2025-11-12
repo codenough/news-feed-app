@@ -87,25 +87,88 @@
         <span nz-icon nzType="clock-circle" nzTheme="outline" class="empty-icon"></span>
         <h2 class="empty-title">No articles in Read Later</h2>
         <p class="empty-message">
-          Articles you save to read later will appear here. Click the clock icon on any article to add it to this list.
+          Articles you save to read later will appear here. Click the clock icon on any article to add it to this list, or paste external URLs above.
         </p>
         <button nz-button nzType="primary" (click)="goBack()">
           Browse Articles
         </button>
       </div>
     } @else {
-      <div class="news-feed">
-        @for (article of readLaterArticles(); track article.id) {
-          <app-news-card
-            [article]="article"
-            [viewMode]="viewMode()"
-            (cardClick)="onCardClick($event)"
-            (bookmarkToggle)="onBookmarkToggle($event)"
-            (readLaterToggle)="onReadLaterToggle($event)"
-            (menuAction)="onMenuAction($event)"
-          />
-        }
-      </div>
+      <!-- External Articles Section -->
+      @if (externalArticles().length > 0) {
+        <section class="articles-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span nz-icon nzType="link" nzTheme="outline" class="section-icon"></span>
+              External Links
+              <span class="section-count">({{ externalArticles().length }})</span>
+            </h2>
+            @if (externalArticles().length > 0) {
+              <button
+                nz-button
+                nzType="text"
+                nzSize="small"
+                (click)="clearExternalArticles()"
+                aria-label="Clear external articles"
+                class="clear-section-btn"
+              >
+                <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+                Clear All
+              </button>
+            }
+          </div>
+          <div class="news-feed">
+            @for (article of externalArticlesAsNews(); track article.id) {
+              <app-news-card
+                [article]="article"
+                [viewMode]="viewMode()"
+                (cardClick)="onCardClick($event)"
+                (bookmarkToggle)="onBookmarkToggle($event)"
+                (readLaterToggle)="onReadLaterToggle($event)"
+                (menuAction)="onMenuAction($event)"
+              />
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Internal Articles Section -->
+      @if (internalReadLaterArticles().length > 0) {
+        <section class="articles-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span nz-icon nzType="file-text" nzTheme="outline" class="section-icon"></span>
+              Saved Articles
+              <span class="section-count">({{ internalReadLaterArticles().length }})</span>
+            </h2>
+            @if (internalReadLaterArticles().length > 0) {
+              <button
+                nz-button
+                nzType="text"
+                nzSize="small"
+                (click)="clearInternalArticles()"
+                aria-label="Clear saved articles"
+                class="clear-section-btn"
+              >
+                <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+                Clear All
+              </button>
+            }
+          </div>
+          <div class="news-feed">
+            @for (article of internalReadLaterArticles(); track article.id) {
+              <app-news-card
+                [article]="article"
+                [viewMode]="viewMode()"
+                (cardClick)="onCardClick($event)"
+                (bookmarkToggle)="onBookmarkToggle($event)"
+                (readLaterToggle)="onReadLaterToggle($event)"
+                (menuAction)="onMenuAction($event)"
+              />
+            }
+          </div>
+        </section>
+      }
     }
   </main>
 </div>
