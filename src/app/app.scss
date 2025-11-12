@@ -170,9 +170,21 @@
       border-radius: 8px;
       font-family: 'Lato', sans-serif;
 
+      &:focus,
+      &.ant-input-affix-wrapper-focused {
+        border-color: var(--color-brand-primary);
+        box-shadow: 0 0 0 2px rgba(140, 157, 255, 0.1);
+        outline: none;
+      }
+
       input {
         font-family: 'Lato', sans-serif;
         font-size: 0.875rem;
+
+        &:focus {
+          box-shadow: none;
+          outline: none;
+        }
       }
     }
 

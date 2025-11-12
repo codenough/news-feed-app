@@ -261,14 +261,16 @@ body {
   border-color: var(--color-border-default);
   color: var(--color-text-primary);
 
-  &:hover {
-    border-color: var(--color-brand-primary);
+  &:hover:not(:focus):not(.ant-input-affix-wrapper-focused) {
+    border-color: var(--color-brand-primary) !important;
+    box-shadow: none !important;
   }
 
   &:focus,
   &-focused {
-    border-color: var(--color-brand-primary);
-    box-shadow: 0 0 0 2px var(--color-state-focus);
+    border-color: var(--color-brand-primary) !important;
+    box-shadow: 0 0 0 2px rgba(140, 157, 255, 0.1) !important;
+    outline: none;
   }
 
   &::placeholder {

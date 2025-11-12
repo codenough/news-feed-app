@@ -74,12 +74,12 @@
       color: var(--color-text-primary);
 
       &:hover {
-        border-color: var(--color-icon-active);
+        border-color: var(--color-brand-primary) !important;
       }
 
       &.ant-picker-focused {
-        border-color: var(--color-brand-primary);
-        box-shadow: 0 0 0 2px rgba(140, 157, 255, 0.1);
+        border-color: var(--color-brand-primary) !important;
+        box-shadow: 0 0 0 2px rgba(140, 157, 255, 0.1) !important;
       }
 
       .ant-picker-input input {
@@ -97,6 +97,122 @@
       .ant-picker-clear {
         color: var(--color-icon-default);
       }
+    }
+  }
+
+  // Date picker dropdown/overlay styles
+  .ant-picker-dropdown {
+    .ant-picker-panel-container {
+      background-color: var(--color-bg-card);
+    }
+
+    // Day names (weekday headers) - match date numbers color
+    .ant-picker-content thead th {
+      color: var(--color-text-primary);
+    }
+
+    // Regular date cells - ensure light text in dark mode
+    .ant-picker-cell-in-view .ant-picker-cell-inner {
+      color: var(--color-text-primary);
+    }
+
+    // Selected date
+    .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+      background-color: var(--color-brand-primary) !important;
+      color: var(--color-text-on-primary) !important;
+    }
+
+    // Today's date
+    .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+      border-color: var(--color-brand-primary) !important;
+    }
+
+    // Hover state
+    .ant-picker-cell-in-view:not(.ant-picker-cell-selected):hover .ant-picker-cell-inner {
+      background-color: rgba(140, 157, 255, 0.1) !important;
+      color: var(--color-text-primary);
+    }
+
+    // Hover state for previous/next month dates
+    .ant-picker-cell:not(.ant-picker-cell-in-view):hover .ant-picker-cell-inner {
+      background-color: rgba(140, 157, 255, 0.1) !important;
+      color: var(--color-neutral-dark-text) !important;
+    }
+
+    // Range hover (for range pickers)
+    .ant-picker-cell-in-view.ant-picker-cell-range-hover:not(.ant-picker-cell-selected) .ant-picker-cell-inner {
+      background-color: rgba(140, 157, 255, 0.1) !important;
+      color: var(--color-text-primary);
+    }
+
+    // Range start/end
+    .ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
+    .ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
+      background-color: var(--color-brand-primary) !important;
+      color: var(--color-text-on-primary) !important;
+    }
+
+    // In range
+    .ant-picker-cell-in-view.ant-picker-cell-in-range .ant-picker-cell-inner {
+      background-color: rgba(140, 157, 255, 0.15) !important;
+      color: var(--color-text-primary);
+    }
+
+    // Header (month/year selector)
+    .ant-picker-header {
+      color: var(--color-text-primary);
+
+      // Navigation buttons (prev/next month arrows)
+      button {
+        color: var(--color-text-primary) !important;
+
+        &:hover {
+          color: var(--color-brand-primary) !important;
+        }
+      }
+
+      // Month/Year selector text
+      .ant-picker-header-view {
+        button {
+          color: var(--color-text-primary) !important;
+
+          &:hover {
+            color: var(--color-brand-primary) !important;
+          }
+        }
+      }
+    }
+
+    // Previous/Next month dates (out of current month view)
+    .ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner {
+      color: var(--color-text-secondary) !important;
+    }
+
+    // Footer (Today button, etc.)
+    .ant-picker-footer {
+      background-color: var(--color-bg-card);
+
+      .ant-picker-today-btn {
+        color: var(--color-brand-primary) !important;
+
+        &:hover {
+          color: var(--color-state-hover) !important;
+        }
+      }
+    }
+
+    // Time panel (if time selection is enabled)
+    .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected {
+      background-color: rgba(140, 157, 255, 0.1) !important;
+
+      .ant-picker-time-panel-cell-inner {
+        color: var(--color-brand-primary) !important;
+      }
+    }
+
+    // Disabled dates should remain subdued
+    .ant-picker-cell-disabled .ant-picker-cell-inner {
+      color: var(--color-text-tertiary) !important;
     }
   }
 }
