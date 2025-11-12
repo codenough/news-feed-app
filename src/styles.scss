@@ -118,17 +118,30 @@ body {
   &:focus {
     background-color: var(--color-state-hover);
     border-color: var(--color-state-hover);
+    color: var(--color-text-on-primary) !important;
   }
 }
 
 .ant-btn-default {
+  background-color: transparent;
   border-color: var(--color-border-default);
   color: var(--color-text-primary);
 
   &:hover,
   &:focus {
+    background-color: var(--color-bg-page);
     border-color: var(--color-brand-primary);
     color: var(--color-brand-primary);
+  }
+}
+
+.ant-btn-text {
+  color: var(--color-text-primary);
+
+  &:hover,
+  &:focus {
+    color: var(--color-brand-primary);
+    background-color: transparent;
   }
 }
 
@@ -289,6 +302,14 @@ body {
       background-color: var(--color-state-focus);
       color: var(--color-brand-primary);
     }
+
+    .anticon {
+      margin-right: 8px;
+    }
+  }
+
+  .ant-dropdown-menu-item-divider {
+    background-color: var(--color-text-secondary);
   }
 }
 

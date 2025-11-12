@@ -1,9 +1,12 @@
 <button
+  nz-button
+  nzType="text"
+  nzSize="small"
+  nzShape="circle"
   nz-dropdown
   [nzDropdownMenu]="menu"
   nzTrigger="click"
   nzPlacement="bottomRight"
-  type="button"
   class="menu-trigger"
   (click)="$event.stopPropagation()"
   aria-label="Article options"
@@ -25,7 +28,6 @@
       </li>
     }
 
-    <li nz-menu-divider></li>
 
     @if (!article.isSkipped) {
       <li nz-menu-item (click)="onSkip()">

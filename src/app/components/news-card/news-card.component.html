@@ -48,36 +48,31 @@
 
   <div class="news-card__actions card-actions">
     <button
-      type="button"
-      class="news-card__action-btn"
+      nz-button
+      nzType="text"
+      nzSize="small"
+      nzShape="circle"
       [class.news-card__action-btn--active]="article.isBookmarked"
       (click)="onBookmarkClick($event)"
       [attr.aria-label]="article.isBookmarked ? 'Remove bookmark' : 'Bookmark article'"
       title="Bookmark"
+      class="news-card__action-btn"
     >
-      @if (article.isBookmarked) {
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
-          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-        </svg>
-      } @else {
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-        </svg>
-      }
+      <span nz-icon [nzType]="article.isBookmarked ? 'star' : 'star'" [nzTheme]="article.isBookmarked ? 'fill' : 'outline'"></span>
     </button>
 
     <button
-      type="button"
-      class="news-card__action-btn"
+      nz-button
+      nzType="text"
+      nzSize="small"
+      nzShape="circle"
       [class.news-card__action-btn--active]="article.isReadLater"
       (click)="onReadLaterClick($event)"
       [attr.aria-label]="article.isReadLater ? 'Remove from read later' : 'Add to read later'"
       title="Read Later"
+      class="news-card__action-btn"
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <polyline points="12 6 12 12 16 14"/>
-      </svg>
+      <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
     </button>
 
     <app-article-menu

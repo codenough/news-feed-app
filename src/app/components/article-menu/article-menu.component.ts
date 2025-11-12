@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NewsArticle } from '../../models/news-article.interface';
 
 export interface MenuAction {
@@ -12,7 +13,7 @@ export interface MenuAction {
 @Component({
   selector: 'app-article-menu',
   standalone: true,
-  imports: [CommonModule, NzDropDownModule, NzIconModule],
+  imports: [CommonModule, NzDropDownModule, NzIconModule, NzButtonModule],
   templateUrl: './article-menu.component.html',
   styleUrl: './article-menu.component.scss'
 })

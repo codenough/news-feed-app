@@ -3,10 +3,12 @@
     <h3 class="filter-title">Date Range</h3>
     @if (hasDateFilter) {
       <button
-        class="clear-btn"
+        nz-button
+        nzType="link"
+        nzSize="small"
         (click)="clearDates()"
-        type="button"
-        aria-label="Clear date filters">
+        aria-label="Clear date filters"
+        class="clear-btn">
         Clear
       </button>
     }

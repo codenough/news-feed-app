@@ -34,36 +34,36 @@
       <div class="header-actions">
         <div class="filter-controls">
           <button
-            type="button"
-            class="filter-btn"
-            [class.filter-btn--active]="currentFilter() === 'all'"
+            nz-button
+            nzSize="default"
+            [nzType]="currentFilter() === 'all' ? 'primary' : 'default'"
             (click)="onFilterChange('all')"
             aria-label="Show all articles"
           >
             All
           </button>
           <button
-            type="button"
-            class="filter-btn"
-            [class.filter-btn--active]="currentFilter() === 'unread'"
+            nz-button
+            nzSize="default"
+            [nzType]="currentFilter() === 'unread' ? 'primary' : 'default'"
             (click)="onFilterChange('unread')"
             aria-label="Show unread articles"
           >
             Unread
           </button>
           <button
-            type="button"
-            class="filter-btn"
-            [class.filter-btn--active]="currentFilter() === 'read'"
+            nz-button
+            nzSize="default"
+            [nzType]="currentFilter() === 'read' ? 'primary' : 'default'"
             (click)="onFilterChange('read')"
             aria-label="Show read articles"
           >
             Read
           </button>
           <button
-            type="button"
-            class="filter-btn"
-            [class.filter-btn--active]="currentFilter() === 'bookmarked'"
+            nz-button
+            nzSize="default"
+            [nzType]="currentFilter() === 'bookmarked' ? 'primary' : 'default'"
             (click)="onFilterChange('bookmarked')"
             aria-label="Show bookmarked articles"
           >
@@ -72,11 +72,12 @@
         </div>
         <div class="header-controls">
           <button
-            type="button"
-            class="sort-toggle-btn"
+            nz-button
+            nzSize="default"
             (click)="toggleSort()"
             [attr.aria-label]="sortOrder() === 'desc' ? 'Sort by oldest first' : 'Sort by latest first'"
             [title]="sortOrder() === 'desc' ? 'Sort by oldest' : 'Sort by latest'"
+            class="sort-toggle-btn"
           >
             @if (sortOrder() === 'desc') {
               <span nz-icon nzType="sort-descending" nzTheme="outline"></span>
@@ -88,26 +89,17 @@
           </button>
 
           <button
-            type="button"
-            class="refresh-btn"
+            nz-button
+            nzSize="default"
+            nzShape="circle"
             (click)="onRefresh()"
+            [nzLoading]="isLoading()"
             [disabled]="isLoading()"
             aria-label="Refresh feed"
             title="Refresh feed"
+            class="refresh-btn"
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              [class.spinning]="isLoading()"
-            >
-              <polyline points="23 4 23 10 17 10"/>
-              <polyline points="1 20 1 14 7 14"/>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-            </svg>
+            <span nz-icon nzType="reload" nzTheme="outline"></span>
           </button>
 
           @if (lastFetchTimestamp()) {
@@ -119,27 +111,17 @@
 
         <div class="header-actions-right">
           <button
-            type="button"
-            class="view-toggle-btn"
+            nz-button
+            nzSize="default"
+            nzShape="circle"
             (click)="toggleViewMode()"
             [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+            class="view-toggle-btn"
           >
             @if (viewMode() === 'grid') {
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="8" y1="6" x2="21" y2="6"/>
-                <line x1="8" y1="12" x2="21" y2="12"/>
-                <line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/>
-                <line x1="3" y1="12" x2="3.01" y2="12"/>
-                <line x1="3" y1="18" x2="3.01" y2="18"/>
-              </svg>
+              <span nz-icon nzType="unordered-list" nzTheme="outline"></span>
             } @else {
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
+              <span nz-icon nzType="appstore" nzTheme="outline"></span>
             }
           </button>
           <app-theme-toggle />
@@ -155,7 +137,9 @@
         <ul class="source-list">
           <li class="source-item">
             <button
-              type="button"
+              nz-button
+              nzType="text"
+              nzSize="default"
               class="source-btn"
               [class.source-btn--active]="selectedSource() === null"
               (click)="onSourceSelect(null)"
@@ -167,7 +151,9 @@
           @for (source of sources(); track source.name) {
             <li class="source-item">
               <button
-                type="button"
+                nz-button
+                nzType="text"
+                nzSize="default"
                 class="source-btn"
                 [class.source-btn--active]="selectedSource() === source.name"
                 (click)="onSourceSelect(source.name)"
@@ -199,7 +185,7 @@
           <line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
         <p>{{ error() }}</p>
-        <button type="button" class="retry-btn" (click)="onRefresh()">
+        <button nz-button nzType="primary" (click)="onRefresh()">
           Retry
         </button>
       </div>
@@ -234,8 +220,9 @@
             No articles available at the moment.
           }
         </p>
-        @if (searchQuery() || currentFilter() !== 'all') {
-          <button type="button" class="clear-filters-btn" (click)="onClearFilters()">
+        @if (searchQuery() || currentFilter() !== 'all' || selectedSource()) {
+          <button nz-button nzType="default" (click)="onClearFilters()">
+            <span nz-icon nzType="close-circle" nzTheme="outline"></span>
             Clear filters
           </button>
         }
