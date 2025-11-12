@@ -15,7 +15,7 @@ export class RssParserService {
   constructor(private http: HttpClient) {}
 
   fetchAndParseRSS(feedUrl: string, sourceName: string): Observable<RSSParseResult> {
-    // Use a CORS proxy for RSS feeds (in production, you'd use your own backend)
+    // Use a CORS proxy for RSS feeds
     const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`;
 
     return this.http.get(proxyUrl, { responseType: 'text' }).pipe(
@@ -23,9 +23,9 @@ export class RssParserService {
         try {
           const articles = this.parseRSSFeed(xmlText, sourceName);
           return { articles };
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Error parsing RSS feed from ${sourceName}:`, error);
-          return { articles: [], error: `Failed to parse RSS feed: ${error}` };
+          return { articles: [], error: `Failed to parse RSS feed: ${error.message}` };
         }
       }),
       catchError(error => {
@@ -33,6 +33,16 @@ export class RssParserService {
         return of({ articles: [], error: `Failed to fetch RSS feed: ${error.message}` });
       })
     );
+  }
+
+  private parseInMainThread(xmlText: string, sourceName: string): RSSParseResult {
+    try {
+      const articles = this.parseRSSFeed(xmlText, sourceName);
+      return { articles };
+    } catch (error: any) {
+      console.error(`Error parsing RSS feed from ${sourceName}:`, error);
+      return { articles: [], error: `Failed to parse RSS feed: ${error.message}` };
+    }
   }
 
   private parseRSSFeed(xmlText: string, sourceName: string): NewsArticle[] {
