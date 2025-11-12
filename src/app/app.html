@@ -5,8 +5,8 @@
 
       <div class="search-container">
         <nz-input-group [nzPrefix]="prefixIconSearch" [nzSuffix]="suffixIconClear">
-          <input 
-            nz-input 
+          <input
+            nz-input
             type="text"
             placeholder="Search articles..."
             [(ngModel)]="searchQuery"
@@ -19,9 +19,9 @@
         </ng-template>
         <ng-template #suffixIconClear>
           @if (searchQuery()) {
-            <span 
-              nz-icon 
-              nzType="close-circle" 
+            <span
+              nz-icon
+              nzType="close-circle"
               nzTheme="fill"
               class="search-clear-icon"
               (click)="onSearchClear()"

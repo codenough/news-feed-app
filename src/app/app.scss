@@ -169,18 +169,18 @@
     .ant-input-affix-wrapper {
       border-radius: 8px;
       font-family: 'Lato', sans-serif;
-      
+
       input {
         font-family: 'Lato', sans-serif;
         font-size: 0.875rem;
       }
     }
-    
+
     .search-clear-icon {
       cursor: pointer;
       color: var(--color-icon-default);
       transition: color 0.2s ease;
-      
+
       &:hover {
         color: var(--color-icon-active);
       }

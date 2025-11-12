@@ -15,11 +15,11 @@ import { MenuAction } from './components/article-menu/article-menu.component';
 @Component({
   selector: 'app-root',
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
-    NewsCardComponent, 
-    ThemeToggleComponent, 
-    DateRangeFilterComponent, 
+    NewsCardComponent,
+    ThemeToggleComponent,
+    DateRangeFilterComponent,
     NzIconModule,
     NzInputModule,
     NzButtonModule
