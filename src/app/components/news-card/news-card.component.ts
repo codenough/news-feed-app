@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NewsArticle } from '../../models/news-article.interface';
-import { ArticleMenuComponent, MenuAction } from '../article-menu/article-menu.component';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
@@ -9,7 +8,7 @@ import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 @Component({
   selector: 'app-news-card',
   standalone: true,
-  imports: [CommonModule, ArticleMenuComponent, NzButtonModule, NzIconModule, NzTooltipModule],
+  imports: [CommonModule, NzButtonModule, NzIconModule, NzTooltipModule],
   templateUrl: './news-card.component.html',
   styleUrl: './news-card.component.scss'
 })
@@ -20,7 +19,10 @@ export class NewsCardComponent {
   @Output() cardClick = new EventEmitter<NewsArticle>();
   @Output() bookmarkToggle = new EventEmitter<NewsArticle>();
   @Output() readLaterToggle = new EventEmitter<NewsArticle>();
-  @Output() menuAction = new EventEmitter<MenuAction>();
+  @Output() markRead = new EventEmitter<NewsArticle>();
+  @Output() markUnread = new EventEmitter<NewsArticle>();
+  @Output() skip = new EventEmitter<NewsArticle>();
+  @Output() undoSkip = new EventEmitter<NewsArticle>();
 
   onCardClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -39,8 +41,24 @@ export class NewsCardComponent {
     this.readLaterToggle.emit(this.article);
   }
 
-  onMenuAction(action: MenuAction): void {
-    this.menuAction.emit(action);
+  onMarkReadClick(event: Event): void {
+    event.stopPropagation();
+    this.markRead.emit(this.article);
+  }
+
+  onMarkUnreadClick(event: Event): void {
+    event.stopPropagation();
+    this.markUnread.emit(this.article);
+  }
+
+  onSkipClick(event: Event): void {
+    event.stopPropagation();
+    this.skip.emit(this.article);
+  }
+
+  onUndoSkipClick(event: Event): void {
+    event.stopPropagation();
+    this.undoSkip.emit(this.article);
   }
 
   getRelativeTime(date: Date): string {

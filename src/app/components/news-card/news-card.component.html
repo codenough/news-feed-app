@@ -77,9 +77,64 @@
       <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
     </button>
 
-    <app-article-menu
-      [article]="article"
-      (menuAction)="onMenuAction($event)"
-    />
+    @if (!article.isRead) {
+      <button
+        nz-button
+        nzType="text"
+        nzSize="small"
+        nzShape="circle"
+        (click)="onMarkReadClick($event)"
+        [attr.aria-label]="'Mark as read'"
+        nz-tooltip
+        nzTooltipTitle="Mark as read"
+        class="news-card__action-btn"
+      >
+        <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+      </button>
+    } @else {
+      <button
+        nz-button
+        nzType="text"
+        nzSize="small"
+        nzShape="circle"
+        (click)="onMarkUnreadClick($event)"
+        [attr.aria-label]="'Mark as unread'"
+        nz-tooltip
+        nzTooltipTitle="Mark as unread"
+        class="news-card__action-btn"
+      >
+        <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+      </button>
+    }
+
+    @if (!article.isSkipped) {
+      <button
+        nz-button
+        nzType="text"
+        nzSize="small"
+        nzShape="circle"
+        (click)="onSkipClick($event)"
+        [attr.aria-label]="'Skip article'"
+        nz-tooltip
+        nzTooltipTitle="Skip article"
+        class="news-card__action-btn"
+      >
+        <span nz-icon nzType="eye-invisible" nzTheme="outline"></span>
+      </button>
+    } @else {
+      <button
+        nz-button
+        nzType="text"
+        nzSize="small"
+        nzShape="circle"
+        (click)="onUndoSkipClick($event)"
+        [attr.aria-label]="'Undo skip'"
+        nz-tooltip
+        nzTooltipTitle="Undo skip"
+        class="news-card__action-btn"
+      >
+        <span nz-icon nzType="eye" nzTheme="outline"></span>
+      </button>
+    }
   </div>
 </article>

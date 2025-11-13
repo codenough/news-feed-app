@@ -8,7 +8,6 @@ import { UserPreferencesService, FilterType } from '../../services/user-preferen
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
-import { MenuAction } from '../../components/article-menu/article-menu.component';
 
 interface ArticleGroup {
   date: Date;
@@ -110,21 +109,20 @@ export class FeedComponent {
     this.newsService.toggleReadLater(article.id);
   }
 
-  protected onMenuAction(action: MenuAction): void {
-    switch (action.type) {
-      case 'mark-read':
-        this.newsService.markAsRead(action.article.id);
-        break;
-      case 'mark-unread':
-        this.newsService.toggleReadStatus(action.article.id);
-        break;
-      case 'skip':
-        this.newsService.skipArticle(action.article.id);
-        break;
-      case 'undo-skip':
-        this.newsService.undoSkip(action.article.id);
-        break;
-    }
+  protected onMarkRead(article: NewsArticle): void {
+    this.newsService.markAsRead(article.id);
+  }
+
+  protected onMarkUnread(article: NewsArticle): void {
+    this.newsService.toggleReadStatus(article.id);
+  }
+
+  protected onSkip(article: NewsArticle): void {
+    this.newsService.skipArticle(article.id);
+  }
+
+  protected onUndoSkip(article: NewsArticle): void {
+    this.newsService.undoSkip(article.id);
   }
 
   protected onClearFilters(): void {

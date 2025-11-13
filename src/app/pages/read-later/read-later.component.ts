@@ -8,7 +8,6 @@ import { ExternalArticle } from '../../models/external-article.interface';
 import { NewsService } from '../../services/news.service';
 import { ArticlePersistenceService } from '../../services/article-persistence.service';
 import { MetadataExtractionService } from '../../services/metadata-extraction.service';
-import { MenuAction } from '../../components/article-menu/article-menu.component';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -177,32 +176,36 @@ export class ReadLaterComponent {
     }
   }
 
-  protected onMenuAction(action: MenuAction): void {
-    // External articles don't support all menu actions
-    if (action.article.id.startsWith('ext_')) {
-      // Only allow removing from read later for external articles
-      if (action.type === 'skip') {
-        this.persistenceService.removeExternalArticle(action.article.id);
-        this.loadExternalArticles();
-        this.notifyExternalArticlesChanged();
-      }
-      return;
+  protected onMarkRead(article: NewsArticle): void {
+    // Only mark internal articles as read
+    if (!article.id.startsWith('ext_')) {
+      this.newsService.markAsRead(article.id);
     }
+  }
 
-    // Handle internal article menu actions
-    switch (action.type) {
-      case 'mark-read':
-        this.newsService.markAsRead(action.article.id);
-        break;
-      case 'mark-unread':
-        this.newsService.toggleReadStatus(action.article.id);
-        break;
-      case 'skip':
-        this.newsService.skipArticle(action.article.id);
-        break;
-      case 'undo-skip':
-        this.newsService.undoSkip(action.article.id);
-        break;
+  protected onMarkUnread(article: NewsArticle): void {
+    // Only mark internal articles as unread
+    if (!article.id.startsWith('ext_')) {
+      this.newsService.toggleReadStatus(article.id);
+    }
+  }
+
+  protected onSkip(article: NewsArticle): void {
+    // For external articles, remove them
+    if (article.id.startsWith('ext_')) {
+      this.persistenceService.removeExternalArticle(article.id);
+      this.loadExternalArticles();
+      this.notifyExternalArticlesChanged();
+    } else {
+      // Skip internal article
+      this.newsService.skipArticle(article.id);
+    }
+  }
+
+  protected onUndoSkip(article: NewsArticle): void {
+    // Only undo skip for internal articles
+    if (!article.id.startsWith('ext_')) {
+      this.newsService.undoSkip(article.id);
     }
   }
 
