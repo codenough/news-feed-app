@@ -222,17 +222,17 @@
   align-items: center;
   gap: 2rem;
   flex: 1;
-  justify-content: space-between;
+  justify-content: center;
 }
 
-.filter-controls {
+.sidebar-section .filter-controls {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border-default);
-  border-radius: 8px;
-  padding: 0.25rem;
+
+  button {
+    flex: 1;
+  }
 }
 
 .filter-btn {
@@ -272,12 +272,26 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-right: auto;
+}
+
+.header-actions-center {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .header-actions-right {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-left: auto;
+}
+
+.bookmarked-btn--active {
+  span[nz-icon] {
+    color: var(--color-brand-primary);
+  }
 }
 
 .read-later-btn {
@@ -408,29 +422,8 @@
 }
 
 .view-toggle-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  color: var(--color-icon-default);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: var(--color-bg-card);
-    color: var(--color-icon-active);
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
+  span[nz-icon] {
+    font-size: 16px;
   }
 }
 

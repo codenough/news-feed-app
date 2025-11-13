@@ -15,18 +15,156 @@
           class="search-input"
         />
         @if (searchQuery()) {
-          <span
-            nz-icon
-            nzType="close-circle"
-            nzTheme="fill"
-            class="search-clear-icon"
-            (click)="onSearchClear()"
-            aria-label="Clear search"
-          ></span>
+        <span
+          nz-icon
+          nzType="close-circle"
+          nzTheme="fill"
+          class="search-clear-icon"
+          (click)="onSearchClear()"
+          aria-label="Clear search"
+        ></span>
         }
       </div>
 
       <div class="header-actions">
+        <div class="header-controls">
+          <button
+            nz-button
+            nzType="default"
+            nzSize="default"
+            routerLink="/admin"
+            aria-label="Admin Dashboard"
+            nz-tooltip
+            nzTooltipTitle="Admin Dashboard"
+          >
+            <span nz-icon nzType="setting" nzTheme="outline"></span>
+            <span class="btn-label">Admin</span>
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            nzSize="default"
+            (click)="navigateToReadLater()"
+            aria-label="View read later articles"
+            nz-tooltip
+            nzTooltipTitle="Read Later"
+            class="read-later-btn"
+          >
+            <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+            <span class="btn-label">Read Later</span>
+            @if (readLaterCount() > 0) {
+            <nz-badge
+              [nzCount]="readLaterCount()"
+              [nzShowZero]="false"
+              class="read-later-count-badge"
+            ></nz-badge>
+            }
+          </button>
+        </div>
+        <div class="header-actions-center">
+          <button
+            nz-button
+            nzType="default"
+            nzSize="default"
+            (click)="onRefresh()"
+            [nzLoading]="isRefreshing()"
+            [disabled]="isRefreshing() || !hasEnabledSources()"
+            aria-label="Refresh feed"
+            nz-tooltip
+            [nzTooltipTitle]="hasEnabledSources() ? 'Refresh feed' : 'No sources enabled'"
+          >
+            <span nz-icon nzType="reload" nzTheme="outline"></span>
+          </button>
+
+          @if (lastFetchTimestamp()) {
+          <span class="last-updated">
+            Last updated: {{ getFormattedTimestamp() }}
+            @if (lastFetchStatus()) {
+            <span
+              class="status-indicator"
+              [class.status-indicator--success]="lastFetchStatus() === 'success'"
+              [class.status-indicator--error]="lastFetchStatus() === 'error'"
+              [class.status-indicator--partial]="lastFetchStatus() === 'partial'"
+              [attr.aria-label]="
+                lastFetchStatus() === 'success'
+                  ? 'Last fetch succeeded'
+                  : lastFetchStatus() === 'partial'
+                  ? 'Last fetch partially succeeded'
+                  : 'Last fetch failed'
+              "
+            ></span>
+            }
+          </span>
+          }
+        </div>
+
+        <div class="header-actions-right">
+          <button
+            nz-button
+            nzType="default"
+            nzSize="default"
+            [class.bookmarked-btn--active]="currentFilter() === 'bookmarked'"
+            (click)="onFilterChange('bookmarked')"
+            aria-label="Show bookmarked articles"
+            nz-tooltip
+            nzTooltipTitle="Bookmarked"
+          >
+            <span
+              nz-icon
+              [nzType]="currentFilter() === 'bookmarked' ? 'star' : 'star'"
+              [nzTheme]="currentFilter() === 'bookmarked' ? 'fill' : 'outline'"
+            ></span>
+          </button>
+
+          <button
+            nz-button
+            nzType="default"
+            nzSize="default"
+            (click)="toggleSort()"
+            [attr.aria-label]="
+              sortOrder() === 'desc' ? 'Sort by oldest first' : 'Sort by latest first'
+            "
+            nz-tooltip
+            [nzTooltipTitle]="sortOrder() === 'desc' ? 'Sort by oldest' : 'Sort by latest'"
+            class="sort-toggle-btn"
+          >
+            @if (sortOrder() === 'desc') {
+            <span nz-icon nzType="sort-descending" nzTheme="outline"></span>
+            <span class="btn-label">Latest</span>
+            } @else {
+            <span nz-icon nzType="sort-ascending" nzTheme="outline"></span>
+            <span class="btn-label">Oldest</span>
+            }
+          </button>
+
+          <button
+            nz-button
+            nzType="default"
+            nzSize="default"
+            (click)="toggleViewMode()"
+            [attr.aria-label]="
+              viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'
+            "
+            nz-tooltip
+            [nzTooltipTitle]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+            class="view-toggle-btn"
+          >
+            @if (viewMode() === 'grid') {
+            <span nz-icon nzType="unordered-list" nzTheme="outline"></span>
+            } @else {
+            <span nz-icon nzType="appstore" nzTheme="outline"></span>
+            }
+          </button>
+          <app-theme-toggle />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-content">
+    <aside class="app-sidebar">
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Filter</h3>
         <div class="filter-controls">
           <button
             nz-button
@@ -55,125 +193,9 @@
           >
             Read
           </button>
-          <button
-            nz-button
-            nzSize="default"
-            [nzType]="currentFilter() === 'bookmarked' ? 'primary' : 'default'"
-            (click)="onFilterChange('bookmarked')"
-            aria-label="Show bookmarked articles"
-          >
-            Bookmarked
-          </button>
-        </div>
-        <div class="header-controls">
-          <button
-            nz-button
-            nzType="default"
-            nzSize="default"
-            (click)="navigateToReadLater()"
-            aria-label="View read later articles"
-            nz-tooltip
-            nzTooltipTitle="Read Later"
-            class="read-later-btn"
-          >
-            <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
-            <span class="btn-label">Read Later</span>
-            @if (readLaterCount() > 0) {
-              <nz-badge
-                [nzCount]="readLaterCount()"
-                [nzShowZero]="false"
-                class="read-later-count-badge"
-              ></nz-badge>
-            }
-          </button>
-
-          <button
-            nz-button
-            nzType="default"
-            nzSize="default"
-            (click)="toggleSort()"
-            [attr.aria-label]="sortOrder() === 'desc' ? 'Sort by oldest first' : 'Sort by latest first'"
-            nz-tooltip
-            [nzTooltipTitle]="sortOrder() === 'desc' ? 'Sort by oldest' : 'Sort by latest'"
-            class="sort-toggle-btn"
-          >
-            @if (sortOrder() === 'desc') {
-              <span nz-icon nzType="sort-descending" nzTheme="outline"></span>
-              <span class="btn-label">Latest</span>
-            } @else {
-              <span nz-icon nzType="sort-ascending" nzTheme="outline"></span>
-              <span class="btn-label">Oldest</span>
-            }
-          </button>
-
-          <button
-            nz-button
-            nzType="default"
-            nzSize="default"
-            (click)="onRefresh()"
-            [nzLoading]="isRefreshing()"
-            [disabled]="isRefreshing() || !hasEnabledSources()"
-            aria-label="Refresh feed"
-            nz-tooltip
-            [nzTooltipTitle]="hasEnabledSources() ? 'Refresh feed' : 'No sources enabled'"
-          >
-            <span nz-icon nzType="reload" nzTheme="outline"></span>
-          </button>
-
-          @if (lastFetchTimestamp()) {
-            <span class="last-updated">
-              Last updated: {{ getFormattedTimestamp() }}
-              @if (lastFetchStatus()) {
-                <span
-                  class="status-indicator"
-                  [class.status-indicator--success]="lastFetchStatus() === 'success'"
-                  [class.status-indicator--error]="lastFetchStatus() === 'error'"
-                  [class.status-indicator--partial]="lastFetchStatus() === 'partial'"
-                  [attr.aria-label]="lastFetchStatus() === 'success' ? 'Last fetch succeeded' : lastFetchStatus() === 'partial' ? 'Last fetch partially succeeded' : 'Last fetch failed'"
-                ></span>
-              }
-            </span>
-          }
-        </div>
-
-        <div class="header-actions-right">
-          <button
-            nz-button
-            nzType="default"
-            nzSize="default"
-            routerLink="/admin"
-            aria-label="Admin Dashboard"
-            nz-tooltip
-            nzTooltipTitle="Admin Dashboard"
-          >
-            <span nz-icon nzType="setting" nzTheme="outline"></span>
-            <span class="btn-label">Admin</span>
-          </button>
-
-          <button
-            nz-button
-            nzSize="default"
-            nzShape="circle"
-            (click)="toggleViewMode()"
-            [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
-            nz-tooltip
-            [nzTooltipTitle]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
-            class="view-toggle-btn"
-          >
-            @if (viewMode() === 'grid') {
-              <span nz-icon nzType="unordered-list" nzTheme="outline"></span>
-            } @else {
-              <span nz-icon nzType="appstore" nzTheme="outline"></span>
-            }
-          </button>
-          <app-theme-toggle />
         </div>
       </div>
-    </div>
-  </header>
 
-  <div class="app-content">
-    <aside class="app-sidebar">
       <div class="sidebar-section">
         <h3 class="sidebar-title">Sources</h3>
         <ul class="source-list">
@@ -191,26 +213,26 @@
             </button>
           </li>
           @for (source of sources(); track source.name) {
-            <li class="source-item">
-              <button
-                nz-button
-                nzType="text"
-                nzSize="default"
-                class="source-btn"
-                [class.source-btn--active]="selectedSource() === source.name"
-                (click)="onSourceSelect(source.name)"
-                [attr.aria-label]="'Show articles from ' + source.name"
-              >
-                <span class="source-name">{{ source.name }}</span>
-                @if (source.unreadCount > 0) {
-                  <nz-badge
-                    [nzCount]="source.unreadCount"
-                    [nzShowZero]="false"
-                    class="source-unread-badge"
-                  ></nz-badge>
-                }
-              </button>
-            </li>
+          <li class="source-item">
+            <button
+              nz-button
+              nzType="text"
+              nzSize="default"
+              class="source-btn"
+              [class.source-btn--active]="selectedSource() === source.name"
+              (click)="onSourceSelect(source.name)"
+              [attr.aria-label]="'Show articles from ' + source.name"
+            >
+              <span class="source-name">{{ source.name }}</span>
+              @if (source.unreadCount > 0) {
+              <nz-badge
+                [nzCount]="source.unreadCount"
+                [nzShowZero]="false"
+                class="source-unread-badge"
+              ></nz-badge>
+              }
+            </button>
+          </li>
           }
         </ul>
       </div>
