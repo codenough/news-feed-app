@@ -195,7 +195,10 @@
       </div>
 
       <div class="sidebar-section">
-        <app-date-range-filter (dateRangeChange)="onDateRangeChange($event)" />
+        <app-date-range-filter
+          [initialDateRange]="persistedDateRange()"
+          (dateRangeChange)="onDateRangeChange($event)"
+        />
       </div>
     </aside>
 

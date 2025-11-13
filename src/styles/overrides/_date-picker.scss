@@ -160,10 +160,10 @@
   // Dates from previous/next month
   .ant-picker-cell-in-view {
     &.ant-picker-cell {
-      color: var(--color-text-secondary) !important;
+      color: var(--color-text-primary) !important;
 
       .ant-picker-cell-inner {
-        color: var(--color-text-secondary) !important;
+        color: var(--color-text-primary) !important;
       }
 
       &:hover {

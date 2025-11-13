@@ -1,4 +1,4 @@
-import { Component, output } from '@angular/core';
+import { Component, output, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
@@ -17,9 +17,31 @@ export interface DateRange {
 })
 export class DateRangeFilterComponent {
   startDate: Date | null = null;
-  endDate: Date | null = null;
+  endDate: Date | null = new Date();
+  private hasInitialized = false;
 
+  initialDateRange = input<DateRange>();
   dateRangeChange = output<DateRange>();
+
+  constructor() {
+    effect(() => {
+      const initial = this.initialDateRange();
+      
+      if (!this.hasInitialized) {
+        this.hasInitialized = true;
+        
+        if (initial && (initial.startDate !== null || initial.endDate !== null)) {
+          // Use persisted values if they exist
+          this.startDate = initial.startDate;
+          this.endDate = initial.endDate;
+        } else {
+          // Use default end date (today) on first load only
+          this.endDate = new Date();
+          this.emitDateRange();
+        }
+      }
+    });
+  }
 
   onStartDateChange(date: Date | null): void {
     this.startDate = date;

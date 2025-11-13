@@ -106,14 +106,20 @@
       background-color: var(--color-bg-card);
     }
 
-    // Day names (weekday headers) - match date numbers color
+    // Day names (weekday headers - Su Mo Tu We Th Fr Sa)
     .ant-picker-content thead th {
-      color: var(--color-text-primary);
+      color: var(--color-text-primary) !important;
     }
 
-    // Regular date cells - ensure light text in dark mode
+    // Current month date cells - match day names color
     .ant-picker-cell-in-view .ant-picker-cell-inner {
-      color: var(--color-text-primary);
+      color: var(--color-text-primary) !important;
+    }
+
+    // Previous/Next month dates (out of current month view) - make very subdued
+    .ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner {
+      color: var(--color-text-tertiary) !important;
+      opacity: 0.4 !important;
     }
 
     // Selected date
@@ -127,22 +133,23 @@
       border-color: var(--color-brand-primary) !important;
     }
 
-    // Hover state
+    // Hover state for current month dates
     .ant-picker-cell-in-view:not(.ant-picker-cell-selected):hover .ant-picker-cell-inner {
       background-color: rgba(140, 157, 255, 0.1) !important;
-      color: var(--color-text-primary);
+      color: var(--color-text-primary) !important;
     }
 
     // Hover state for previous/next month dates
     .ant-picker-cell:not(.ant-picker-cell-in-view):hover .ant-picker-cell-inner {
-      background-color: rgba(140, 157, 255, 0.1) !important;
-      color: var(--color-neutral-dark-text) !important;
+      background-color: rgba(140, 157, 255, 0.05) !important;
+      color: var(--color-text-tertiary) !important;
+      opacity: 0.6 !important;
     }
 
     // Range hover (for range pickers)
     .ant-picker-cell-in-view.ant-picker-cell-range-hover:not(.ant-picker-cell-selected) .ant-picker-cell-inner {
       background-color: rgba(140, 157, 255, 0.1) !important;
-      color: var(--color-text-primary);
+      color: var(--color-text-primary) !important;
     }
 
     // Range start/end
@@ -155,7 +162,7 @@
     // In range
     .ant-picker-cell-in-view.ant-picker-cell-in-range .ant-picker-cell-inner {
       background-color: rgba(140, 157, 255, 0.15) !important;
-      color: var(--color-text-primary);
+      color: var(--color-text-primary) !important;
     }
 
     // Header (month/year selector)
@@ -181,11 +188,6 @@
           }
         }
       }
-    }
-
-    // Previous/Next month dates (out of current month view)
-    .ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner {
-      color: var(--color-text-secondary) !important;
     }
 
     // Footer (Today button, etc.)

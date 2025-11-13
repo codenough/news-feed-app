@@ -40,6 +40,7 @@ export class App implements OnInit {
   protected viewMode = this.preferencesService.viewMode;
   protected sortOrder = this.preferencesService.sortOrder;
   protected currentFilter = this.preferencesService.currentFilter;
+  protected persistedDateRange = this.preferencesService.dateRange;
   protected searchQuery = this.newsService.searchQuery;
   protected selectedSource = this.newsService.selectedSource;
   protected sources = this.newsService.sources$;
@@ -56,10 +57,15 @@ export class App implements OnInit {
   ngOnInit(): void {
     this.newsService.setSortOrder(this.sortOrder());
     this.newsService.setFilter(this.currentFilter());
+
+    const persistedRange = this.persistedDateRange();
+    if (persistedRange.startDate || persistedRange.endDate) {
+      this.newsService.setDateRange(persistedRange.startDate, persistedRange.endDate);
+    }
+
     this.newsService.loadMockData();
     this.updateExternalArticlesCount();
 
-    // Listen for custom event when external articles change
     window.addEventListener('external-articles-changed', () => {
       this.updateExternalArticlesCount();
     });
@@ -110,6 +116,7 @@ export class App implements OnInit {
     this.newsService.setSearchQuery('');
     this.newsService.setSelectedSource(null);
     this.newsService.setDateRange(null, null);
+    this.preferencesService.setDateRange(null, null);
     this.onFilterChange('all');
   }
 
@@ -119,6 +126,7 @@ export class App implements OnInit {
 
   protected onDateRangeChange(range: DateRange): void {
     this.newsService.setDateRange(range.startDate, range.endDate);
+    this.preferencesService.setDateRange(range.startDate, range.endDate);
   }
 
   protected getFormattedTimestamp(): string {

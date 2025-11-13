@@ -8,6 +8,10 @@ export interface UserPreferences {
   viewMode: ViewMode;
   sortOrder: SortOrder;
   currentFilter: FilterType;
+  dateRange?: {
+    startDate: string | null;
+    endDate: string | null;
+  };
   lastModified: number;
 }
 
@@ -20,6 +24,7 @@ export class UserPreferencesService {
   viewMode = signal<ViewMode>('grid');
   sortOrder = signal<SortOrder>('desc');
   currentFilter = signal<FilterType>('all');
+  dateRange = signal<{ startDate: Date | null; endDate: Date | null }>({ startDate: null, endDate: null });
 
   constructor() {
     this.loadPreferences();
@@ -34,6 +39,12 @@ export class UserPreferencesService {
       this.viewMode.set(preferences.viewMode);
       this.sortOrder.set(preferences.sortOrder);
       this.currentFilter.set(preferences.currentFilter || 'all');
+
+      if (preferences.dateRange) {
+        const startDate = preferences.dateRange.startDate ? new Date(preferences.dateRange.startDate) : null;
+        const endDate = preferences.dateRange.endDate ? new Date(preferences.dateRange.endDate) : null;
+        this.dateRange.set({ startDate, endDate });
+      }
     } catch (error) {
       console.error('Error loading user preferences from localStorage:', error);
     }
@@ -41,10 +52,15 @@ export class UserPreferencesService {
 
   private savePreferences(): void {
     try {
+      const currentDateRange = this.dateRange();
       const preferences: UserPreferences = {
         viewMode: this.viewMode(),
         sortOrder: this.sortOrder(),
         currentFilter: this.currentFilter(),
+        dateRange: {
+          startDate: currentDateRange.startDate ? currentDateRange.startDate.toISOString() : null,
+          endDate: currentDateRange.endDate ? currentDateRange.endDate.toISOString() : null
+        },
         lastModified: Date.now()
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(preferences));
@@ -78,11 +94,21 @@ export class UserPreferencesService {
     this.savePreferences();
   }
 
+  setDateRange(startDate: Date | null, endDate: Date | null): void {
+    this.dateRange.set({ startDate, endDate });
+    this.savePreferences();
+  }
+
   getPreferences(): UserPreferences {
+    const currentDateRange = this.dateRange();
     return {
       viewMode: this.viewMode(),
       sortOrder: this.sortOrder(),
       currentFilter: this.currentFilter(),
+      dateRange: {
+        startDate: currentDateRange.startDate ? currentDateRange.startDate.toISOString() : null,
+        endDate: currentDateRange.endDate ? currentDateRange.endDate.toISOString() : null
+      },
       lastModified: Date.now()
     };
   }
@@ -91,6 +117,7 @@ export class UserPreferencesService {
     this.viewMode.set('grid');
     this.sortOrder.set('desc');
     this.currentFilter.set('all');
+    this.dateRange.set({ startDate: null, endDate: null });
     this.savePreferences();
   }
 
@@ -100,6 +127,7 @@ export class UserPreferencesService {
       this.viewMode.set('grid');
       this.sortOrder.set('desc');
       this.currentFilter.set('all');
+      this.dateRange.set({ startDate: null, endDate: null });
     } catch (error) {
       console.error('Error clearing user preferences:', error);
     }
