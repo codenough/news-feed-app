@@ -1,10 +1,51 @@
 // Feed component inherits most styles from global app.scss
 // Component-specific styles for the news feed display
 
+.article-group {
+  margin-bottom: 3rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-border-default);
+}
+
+.group-title {
+  font-family: 'Merriweather', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+
+  [data-theme='dark'] & {
+    color: var(--color-text-primary);
+  }
+}
+
+.unread-count-badge {
+  ::ng-deep .ant-badge-count {
+    background-color: var(--color-brand-accent);
+    color: var(--color-text-on-accent);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 0 0 2px var(--color-bg-page);
+  }
+}
+
 .news-feed {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
+  overflow: visible;
 
   &--list {
     grid-template-columns: 1fr;

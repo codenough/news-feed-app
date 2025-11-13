@@ -50,15 +50,32 @@
   </div>
 }
 
-<div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
-  @for (article of articles(); track article.id) {
-    <app-news-card
-      [article]="article"
-      [viewMode]="viewMode()"
-      (cardClick)="onCardClick($event)"
-      (bookmarkToggle)="onBookmarkToggle($event)"
-      (readLaterToggle)="onReadLaterToggle($event)"
-      (menuAction)="onMenuAction($event)"
-    />
+@if (!isLoading() && !error() && articles().length > 0) {
+  @for (group of articleGroups(); track group.date.getTime()) {
+    <div class="article-group">
+      <div class="group-header">
+        <h2 class="group-title">{{ group.label }}</h2>
+        @if (group.unreadCount > 0) {
+          <nz-badge
+            [nzCount]="group.unreadCount"
+            [nzShowZero]="false"
+            class="unread-count-badge"
+          ></nz-badge>
+        }
+      </div>
+
+      <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
+        @for (article of group.articles; track article.id) {
+          <app-news-card
+            [article]="article"
+            [viewMode]="viewMode()"
+            (cardClick)="onCardClick($event)"
+            (bookmarkToggle)="onBookmarkToggle($event)"
+            (readLaterToggle)="onReadLaterToggle($event)"
+            (menuAction)="onMenuAction($event)"
+          />
+        }
+      </div>
+    </div>
   }
-</div>
+}

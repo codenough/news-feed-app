@@ -7,7 +7,15 @@ import { NewsService } from '../../services/news.service';
 import { UserPreferencesService, FilterType } from '../../services/user-preferences.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { MenuAction } from '../../components/article-menu/article-menu.component';
+
+interface ArticleGroup {
+  date: Date;
+  label: string;
+  articles: NewsArticle[];
+  unreadCount: number;
+}
 
 @Component({
   selector: 'app-feed',
@@ -16,7 +24,8 @@ import { MenuAction } from '../../components/article-menu/article-menu.component
     FormsModule,
     NewsCardComponent,
     NzIconModule,
-    NzButtonModule
+    NzButtonModule,
+    NzBadgeModule
   ],
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.scss'
@@ -33,6 +42,60 @@ export class FeedComponent {
   protected articles = this.newsService.articles$;
   protected isLoading = this.newsService.isLoading;
   protected error = this.newsService.error;
+
+  // Group articles by date
+  protected articleGroups = computed(() => {
+    return this.groupArticlesByDate(this.articles());
+  });
+
+  private groupArticlesByDate(articles: NewsArticle[]): ArticleGroup[] {
+    const groups = new Map<string, ArticleGroup>();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    articles.forEach(article => {
+      const articleDate = new Date(article.publishedAt);
+      articleDate.setHours(0, 0, 0, 0);
+
+      const dateKey = articleDate.toISOString().split('T')[0];
+
+      if (!groups.has(dateKey)) {
+        let label: string;
+
+        if (articleDate.getTime() === today.getTime()) {
+          label = 'Today';
+        } else if (articleDate.getTime() === yesterday.getTime()) {
+          label = 'Yesterday';
+        } else {
+          // Format as "25 October 2025"
+          label = articleDate.toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+        }
+
+        groups.set(dateKey, {
+          date: articleDate,
+          label,
+          articles: [],
+          unreadCount: 0
+        });
+      }
+
+      const group = groups.get(dateKey)!;
+      group.articles.push(article);
+      if (!article.isRead) {
+        group.unreadCount++;
+      }
+    });
+
+    // Convert to array and sort by date (newest first)
+    return Array.from(groups.values()).sort((a, b) => b.date.getTime() - a.date.getTime());
+  }
 
   protected onCardClick(article: NewsArticle): void {
     this.newsService.markAsRead(article.id);
