@@ -516,6 +516,7 @@ export class NewsService {
         }
 
         // Smart merge: combine new articles with existing ones
+        const currentArticlesCount = this.allArticles().length;
         const mergedArticles = this.mergeArticles(this.allArticles(), allFetchedArticles);
 
         const sortedArticles = this.sortArticlesLocally(mergedArticles, this.currentSortOrder());
@@ -528,6 +529,14 @@ export class NewsService {
 
         if (isRefresh) {
           this.isRefreshing.set(false);
+        }
+
+        // Show success message
+        const newArticlesCount = sortedArticles.length - currentArticlesCount;
+        if (newArticlesCount > 0) {
+          this.message.success(`Loaded ${allFetchedArticles.length} articles (${newArticlesCount} new)`);
+        } else {
+          this.message.success(`Feed updated - ${allFetchedArticles.length} articles`);
         }
 
         // Show warning if some feeds failed
