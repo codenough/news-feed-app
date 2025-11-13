@@ -220,11 +220,16 @@ export class NewsService {
       return articles;
     }
 
-    const lowerQuery = query.toLowerCase().trim();
+    const searchTerms = query.toLowerCase().trim().split(/\s+/);
+
     return articles.filter(article => {
-      const titleMatch = article.title.toLowerCase().includes(lowerQuery);
-      const descriptionMatch = article.description.toLowerCase().includes(lowerQuery);
-      return titleMatch || descriptionMatch;
+      const titleLower = article.title.toLowerCase();
+      const descriptionLower = article.description.toLowerCase();
+
+      // Check if all search terms exist in either title or description
+      return searchTerms.every(term =>
+        titleLower.includes(term) || descriptionLower.includes(term)
+      );
     });
   }
 
