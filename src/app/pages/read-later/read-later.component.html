@@ -26,6 +26,18 @@
     </div>
 
     <div class="header-actions">
+      <button
+        nz-button
+        nzType="primary"
+        nzSize="default"
+        (click)="openAddModal()"
+        aria-label="Add external article"
+        class="add-article-btn"
+      >
+        <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+        Add Article
+      </button>
+
       @if (readLaterCount() > 0) {
         <button
           nz-button
@@ -40,50 +52,6 @@
       }
     </div>
   </header>
-
-  <div class="add-url-section">
-    <div class="url-input-container">
-      <div class="input-wrapper">
-        <span nz-icon nzType="link" nzTheme="outline" class="input-prefix-icon"></span>
-        <input
-          nz-input
-          type="url"
-          placeholder="Paste article URL to add to Read Later..."
-          [(ngModel)]="urlInput"
-          (keyup.enter)="onAddUrl()"
-          aria-label="Enter article URL"
-          class="url-input"
-        />
-        @if (urlInput()) {
-          <button
-            nz-button
-            nzType="primary"
-            nzSize="small"
-            (click)="onAddUrl()"
-            [nzLoading]="isAddingUrl()"
-            [disabled]="isAddingUrl()"
-            aria-label="Add URL"
-            class="add-url-btn"
-          >
-            <span nz-icon nzType="plus" nzTheme="outline"></span>
-            Add
-          </button>
-        }
-      </div>
-    </div>
-    @if (urlError()) {
-      <div class="url-error">
-        <span nz-icon nzType="exclamation-circle" nzTheme="fill"></span>
-        {{ urlError() }}
-      </div>
-    }
-    @if (urlSuccess()) {
-      <div class="url-success">
-        <span nz-icon nzType="check-circle" nzTheme="fill"></span>
-        {{ urlSuccess() }}
-      </div>
-    }
-  </div>
 
   <main class="read-later-content">
     @if (readLaterCount() === 0) {
@@ -193,4 +161,8 @@
       }
     }
   </main>
+
+  <app-add-external-article-modal
+    (articleAdded)="onArticleAdded($event)"
+  />
 </div>

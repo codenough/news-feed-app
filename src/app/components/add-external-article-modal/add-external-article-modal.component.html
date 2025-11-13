@@ -1,0 +1,129 @@
+<nz-modal
+  [nzVisible]="isVisible()"
+  nzTitle="Add External Article"
+  nzWidth="900px"
+  [nzFooter]="modalFooter"
+  (nzOnCancel)="close()"
+  nzCentered
+>
+  <div *nzModalContent class="modal-content">
+    <div class="form-section">
+      <h3 class="section-title">Article Details</h3>
+
+      <div class="modal-form">
+        <div class="form-group">
+          <label class="form-label" for="articleUrl">
+            Article URL <span class="required">*</span>
+          </label>
+          <input
+            nz-input
+            id="articleUrl"
+            type="url"
+            placeholder="https://example.com/article"
+            [(ngModel)]="urlInput"
+            (blur)="onUrlBlur()"
+            [disabled]="isLoading()"
+          />
+          @if (urlError()) {
+            <span class="form-error">{{ urlError() }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="articleTitle">
+            Title <span class="required">*</span>
+          </label>
+          <input
+            nz-input
+            id="articleTitle"
+            type="text"
+            placeholder="Article title"
+            [(ngModel)]="titleInput"
+            [disabled]="isLoading()"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="articleDescription">
+            Description
+          </label>
+          <textarea
+            nz-input
+            id="articleDescription"
+            rows="3"
+            placeholder="Article description or summary"
+            [(ngModel)]="descriptionInput"
+            [disabled]="isLoading()"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="articleImage">
+            Image URL
+          </label>
+          <input
+            nz-input
+            id="articleImage"
+            type="url"
+            placeholder="https://example.com/image.jpg"
+            [(ngModel)]="imageUrlInput"
+            [disabled]="isLoading()"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="articleSource">
+            Source Name
+          </label>
+          <input
+            nz-input
+            id="articleSource"
+            type="text"
+            placeholder="External Source"
+            [(ngModel)]="sourceInput"
+            [disabled]="isLoading()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-section">
+      <h3 class="section-title">Preview</h3>
+
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span nz-icon nzType="loading" nzTheme="outline"></span>
+          <p>Fetching article metadata...</p>
+        </div>
+      } @else if (previewArticle()) {
+        <div class="preview-card">
+          <app-news-card
+            [article]="previewArticle()!"
+            [viewMode]="'grid'"
+          />
+        </div>
+      } @else {
+        <div class="empty-preview">
+          <span nz-icon nzType="file-unknown" nzTheme="outline"></span>
+          <p>Enter a URL to see preview</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="close()">
+      Cancel
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      (click)="onSubmit()"
+      [disabled]="!canSubmit()"
+      [nzLoading]="isLoading()"
+    >
+      <span nz-icon nzType="plus" nzTheme="outline"></span>
+      Add to Read Later
+    </button>
+  </ng-template>
+</nz-modal>

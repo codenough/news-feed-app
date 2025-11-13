@@ -1,8 +1,9 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NewsCardComponent } from '../../components/news-card/news-card.component';
+import { AddExternalArticleModalComponent } from '../../components/add-external-article-modal/add-external-article-modal.component';
 import { NewsArticle } from '../../models/news-article.interface';
 import { ExternalArticle } from '../../models/external-article.interface';
 import { NewsService } from '../../services/news.service';
@@ -13,11 +14,21 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-read-later',
   standalone: true,
-  imports: [CommonModule, FormsModule, NewsCardComponent, NzButtonModule, NzIconModule, NzInputModule, NzBadgeModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NewsCardComponent,
+    AddExternalArticleModalComponent,
+    NzButtonModule,
+    NzIconModule,
+    NzInputModule,
+    NzBadgeModule
+  ],
   templateUrl: './read-later.component.html',
   styleUrl: './read-later.component.scss'
 })
@@ -26,9 +37,12 @@ export class ReadLaterComponent {
   private persistenceService = inject(ArticlePersistenceService);
   private metadataService = inject(MetadataExtractionService);
   private preferencesService = inject(UserPreferencesService);
+  private message = inject(NzMessageService);
   private router = inject(Router);
 
-  // URL input state
+  addModal = viewChild.required(AddExternalArticleModalComponent);
+
+  // URL input state (keeping for backward compatibility, but will be replaced by modal)
   protected urlInput = signal('');
   protected isAddingUrl = signal(false);
   protected urlError = signal('');
@@ -170,6 +184,24 @@ export class ReadLaterComponent {
         this.isAddingUrl.set(false);
       }
     });
+  }
+
+  protected openAddModal(): void {
+    this.addModal().open();
+  }
+
+  protected onArticleAdded(article: ExternalArticle): void {
+    // Save to localStorage
+    this.persistenceService.saveExternalArticle(article);
+
+    // Update display
+    this.loadExternalArticles();
+
+    // Notify other components about the change
+    this.notifyExternalArticlesChanged();
+
+    // Show success message
+    this.message.success('Article added to Read Later!');
   }
 
   protected onCardClick(article: NewsArticle): void {
