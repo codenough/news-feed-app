@@ -451,7 +451,6 @@ export class NewsService {
     // If no enabled sources, show empty state
     if (enabledSources.length === 0) {
       this.allArticles.set([]);
-      this.lastFetchTimestamp.set(new Date());
       this.isLoading.set(false);
       return;
     }
@@ -604,7 +603,6 @@ export class NewsService {
 
     const sortedArticles = this.sortArticlesLocally(articlesWithPersistedState, this.currentSortOrder());
     this.allArticles.set(sortedArticles);
-    this.lastFetchTimestamp.set(new Date());
     this.isLoading.set(false);
   }
 }

@@ -58,8 +58,9 @@
 
     .news-card__image-container {
       width: 200px;
-      height: 150px;
+      height: auto;
       flex-shrink: 0;
+      align-self: stretch;
     }
 
     .news-card__content {

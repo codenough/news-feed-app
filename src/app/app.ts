@@ -135,7 +135,10 @@ export class App implements OnInit {
     const timestamp = this.lastFetchTimestamp();
     if (!timestamp) return '';
 
-    return timestamp.toLocaleTimeString('en-US', {
+    return timestamp.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
