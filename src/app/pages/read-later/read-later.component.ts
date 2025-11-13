@@ -249,13 +249,7 @@ export class ReadLaterComponent {
 
     if (article) {
       const updatedArticle = { ...article, isBookmarked: !article.isBookmarked };
-
-      // If article is not bookmarked and not in read later, remove it from storage
-      if (!updatedArticle.isBookmarked && !updatedArticle.isReadLater) {
-        this.persistenceService.removeExternalArticle(articleId);
-      } else {
-        this.persistenceService.saveExternalArticle(updatedArticle);
-      }
+      this.persistenceService.saveExternalArticle(updatedArticle);
 
       this.loadExternalArticles();
       // Notify news service to refresh external articles in main feed
@@ -271,13 +265,7 @@ export class ReadLaterComponent {
 
       if (externalArticle) {
         const updatedArticle = { ...externalArticle, isReadLater: false };
-
-        // If article is not bookmarked and not in read later, remove it from storage
-        if (!updatedArticle.isBookmarked && !updatedArticle.isReadLater) {
-          this.persistenceService.removeExternalArticle(article.id);
-        } else {
-          this.persistenceService.saveExternalArticle(updatedArticle);
-        }
+        this.persistenceService.saveExternalArticle(updatedArticle);
 
         this.loadExternalArticles();
         this.notifyExternalArticlesChanged();
@@ -347,15 +335,9 @@ export class ReadLaterComponent {
     const articles = this.externalArticles();
 
     articles.forEach(article => {
-      // Check if article is bookmarked before removing from read later
-      if (article.isBookmarked === true) {
-        // Keep bookmarked articles but mark as not in read later
-        const updatedArticle = { ...article, isReadLater: false };
-        this.persistenceService.saveExternalArticle(updatedArticle);
-      } else {
-        // Remove non-bookmarked articles from storage entirely
-        this.persistenceService.removeExternalArticle(article.id);
-      }
+      // Mark all external articles as not in read later
+      const updatedArticle = { ...article, isReadLater: false };
+      this.persistenceService.saveExternalArticle(updatedArticle);
     });
 
     this.loadExternalArticles();

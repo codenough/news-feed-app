@@ -109,14 +109,7 @@ export class FeedComponent {
       const external = this.persistenceService.getExternalArticle(article.id);
       if (external) {
         const updatedArticle = { ...external, isBookmarked: !external.isBookmarked };
-
-        // If article is not bookmarked and not in read later, remove it from storage
-        if (!updatedArticle.isBookmarked && updatedArticle.isReadLater === false) {
-          this.persistenceService.removeExternalArticle(article.id);
-        } else {
-          this.persistenceService.saveExternalArticle(updatedArticle);
-        }
-
+        this.persistenceService.saveExternalArticle(updatedArticle);
         this.newsService.refreshExternalArticles();
       }
     } else {
