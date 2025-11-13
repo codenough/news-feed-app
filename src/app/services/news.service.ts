@@ -569,14 +569,23 @@ export class NewsService {
 
     // Process new articles
     const articlesToAdd: NewsArticle[] = [];
+    const updatedExistingArticles: NewsArticle[] = [];
 
     newArticles.forEach(newArticle => {
       const key = this.getArticleUniqueKey(newArticle);
       const existing = existingMap.get(key);
 
       if (existing) {
-        // Article already exists - preserve its state
-        // Don't add to articlesToAdd since it's already in existingArticles
+        // Article already exists - update with fresh data but preserve user state
+        updatedExistingArticles.push({
+          ...newArticle,
+          isRead: existing.isRead,
+          isBookmarked: existing.isBookmarked,
+          isReadLater: existing.isReadLater,
+          isSkipped: existing.isSkipped
+        });
+        // Remove from map so we know it was processed
+        existingMap.delete(key);
       } else {
         // New article - check if it has persisted state using URL-based key
         const persistedState = this.persistenceService.getArticleState(key);
@@ -594,8 +603,11 @@ export class NewsService {
       }
     });
 
-    // Combine: new articles first, then existing articles
-    return [...articlesToAdd, ...existingArticles];
+    // Add remaining existing articles that weren't in the new fetch
+    const remainingExisting = Array.from(existingMap.values());
+
+    // Combine: new articles first, then updated existing, then remaining existing
+    return [...articlesToAdd, ...updatedExistingArticles, ...remainingExisting];
   }
 
   /**
