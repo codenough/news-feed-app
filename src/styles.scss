@@ -10,12 +10,17 @@
   --color-brand-primary: #639D75;
   --color-brand-accent: #9D7563;
 
+  /* --- Tag/Badge Colors --- */
+  --color-tag-external-bg: var(--color-brand-primary);
+  --color-tag-external-text: var(--color-neutral-white);
+
   /* --- Neutral/Greyscale Colors --- */
   --color-neutral-white: #FFFFFF;
   --color-neutral-mist: #F2F4F7;
   --color-neutral-slate: #525D6B;
   --color-neutral-dark-text: #212529;
   --color-neutral-light-text: #6c757d;
+  --color-neutral-periwinkle: #8C9DFF;
 
   /* --- Semantic UI Roles --- */
   /* Backgrounds */
@@ -58,6 +63,10 @@
   /* --- Primary Brand Colors (adjusted for dark context) --- */
   --color-brand-primary: #FFEE8C;
   --color-brand-accent: #2E8B57;
+
+  /* --- Tag/Badge Colors --- */
+  --color-tag-external-bg: var(--color-neutral-periwinkle);
+  --color-tag-external-text: #1A1A1A;
 
   /* --- Neutral/Greyscale Colors for Dark Mode --- */
   --color-neutral-white: #FFFFFF;

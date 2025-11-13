@@ -215,6 +215,27 @@
   color: var(--color-text-secondary);
 }
 
+.news-card__external-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.65rem;
+  background-color: var(--color-tag-external-bg);
+  color: var(--color-tag-external-text);
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  span[nz-icon] {
+    font-size: 12px;
+  }
+}
+
 .news-card__separator {
   color: var(--color-border-default);
 }

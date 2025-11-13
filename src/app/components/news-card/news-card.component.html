@@ -21,6 +21,12 @@
         </svg>
       </div>
     }
+    @if (article.isExternal) {
+      <span class="news-card__external-badge" nz-tooltip nzTooltipTitle="Manually added article">
+        <span nz-icon nzType="link" nzTheme="outline"></span>
+        External
+      </span>
+    }
     @if (!article.isRead) {
       <span class="news-card__unread-indicator" nz-tooltip nzTooltipTitle="Unread article"></span>
     } @else {
