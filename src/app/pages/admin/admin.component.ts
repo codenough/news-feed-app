@@ -8,12 +8,13 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { SourceManagementService, NewsSource } from '../../services/source-management.service';
 import { RssParserService } from '../../services/rss-parser.service';
+import { NewsService } from '../../services/news.service';
 import { NewsArticle } from '../../models/news-article.interface';
 
 @Component({
@@ -29,16 +30,17 @@ import { NewsArticle } from '../../models/news-article.interface';
     NzModalModule,
     NzInputModule,
     NzSwitchModule,
-    NzToolTipModule,
+    NzTooltipModule,
     NzSpinModule,
-    NzAlertModule
+    NzAlertModule,
   ],
   templateUrl: './admin.component.html',
-  styleUrl: './admin.component.scss'
+  styleUrl: './admin.component.scss',
 })
 export class AdminComponent {
   private sourceManagementService = inject(SourceManagementService);
   private rssParserService = inject(RssParserService);
+  private newsService = inject(NewsService);
   private message = inject(NzMessageService);
 
   sources = this.sourceManagementService.sources;
@@ -105,14 +107,14 @@ export class AdminComponent {
           const previewArticles = result.articles.slice(0, 5);
           this.testResult.set({
             success: true,
-            articles: previewArticles
+            articles: previewArticles,
           });
           this.message.success(`Successfully fetched ${result.articles.length} articles`);
           this.showTestResults.set(true);
         } else {
           this.testResult.set({
             success: false,
-            error: 'No articles found in the feed'
+            error: 'No articles found in the feed',
           });
           this.message.warning('Feed parsed but no articles found');
           this.showTestResults.set(true);
@@ -123,12 +125,12 @@ export class AdminComponent {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         this.testResult.set({
           success: false,
-          error: errorMessage
+          error: errorMessage,
         });
         this.message.error('Failed to fetch feed');
         this.showTestResults.set(true);
         this.isTesting.set(false);
-      }
+      },
     });
   }
 
@@ -166,9 +168,9 @@ export class AdminComponent {
   toggleSource(source: NewsSource): void {
     const success = this.sourceManagementService.toggleSource(source.id);
     if (success) {
-      this.message.success(
-        `Source ${!source.enabled ? 'enabled' : 'disabled'} successfully`
-      );
+      this.message.success(`Source ${!source.enabled ? 'enabled' : 'disabled'} successfully`);
+      // Clean up articles from disabled sources
+      this.newsService.cleanupArticlesFromDisabledSources();
     } else {
       this.message.error('Failed to toggle source');
     }
@@ -178,6 +180,8 @@ export class AdminComponent {
     const success = this.sourceManagementService.deleteSource(source.id);
     if (success) {
       this.message.success('Source deleted successfully');
+      // Clean up articles from deleted source
+      this.newsService.cleanupArticlesFromDisabledSources();
     } else {
       this.message.error('Failed to delete source');
     }

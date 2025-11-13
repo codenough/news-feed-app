@@ -1,6 +1,7 @@
 import { Injectable, signal, inject, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError, of, forkJoin } from 'rxjs';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { NewsArticle } from '../models/news-article.interface';
 import { ArticlePersistenceService } from './article-persistence.service';
 import { SourceManagementService } from './source-management.service';
@@ -27,6 +28,7 @@ export interface FetchArticlesParams {
 export class NewsService {
   private readonly API_BASE_URL = '/api/news';
   private readonly CACHED_ARTICLES_KEY = 'chronicle-cached-articles';
+  private readonly CACHED_TIMESTAMP_KEY = 'chronicle-last-fetch-timestamp';
 
   private articlesSubject = new BehaviorSubject<NewsArticle[]>([]);
   private allArticles = signal<NewsArticle[]>([]);
@@ -38,7 +40,8 @@ export class NewsService {
   dateRange = signal<{ startDate: Date | null; endDate: Date | null }>({ startDate: null, endDate: null });
 
   articles$ = computed(() => {
-    let filtered = this.filterArticles(this.allArticles(), this.currentFilter());
+    let filtered = this.filterByEnabledSources(this.allArticles());
+    filtered = this.filterArticles(filtered, this.currentFilter());
     filtered = this.filterBySource(filtered, this.selectedSource());
     filtered = this.filterByDateRange(filtered, this.dateRange());
     filtered = this.searchArticles(filtered, this.searchQuery());
@@ -76,10 +79,12 @@ export class NewsService {
   private persistenceService = inject(ArticlePersistenceService);
   private sourceManagementService = inject(SourceManagementService);
   private rssParserService = inject(RssParserService);
+  private message = inject(NzMessageService);
 
   constructor(private http: HttpClient) {
     // Load cached articles on initialization
     this.loadCachedArticles();
+    this.loadCachedTimestamp();
   }
 
   private loadCachedArticles(): void {
@@ -95,6 +100,25 @@ export class NewsService {
       }
     } catch (error) {
       console.error('Error loading cached articles:', error);
+    }
+  }
+
+  private loadCachedTimestamp(): void {
+    try {
+      const cached = localStorage.getItem(this.CACHED_TIMESTAMP_KEY);
+      if (cached) {
+        this.lastFetchTimestamp.set(new Date(cached));
+      }
+    } catch (error) {
+      console.error('Error loading cached timestamp:', error);
+    }
+  }
+
+  private saveCachedTimestamp(timestamp: Date): void {
+    try {
+      localStorage.setItem(this.CACHED_TIMESTAMP_KEY, timestamp.toISOString());
+    } catch (error) {
+      console.error('Error saving cached timestamp:', error);
     }
   }
 
@@ -212,6 +236,24 @@ export class NewsService {
       default:
         return articles;
     }
+  }
+
+  filterByEnabledSources(articles: NewsArticle[]): NewsArticle[] {
+    const enabledSources = this.sourceManagementService.getEnabledSources();
+    const enabledSourceNames = new Set(enabledSources.map(s => s.name));
+
+    return articles.filter(article => {
+      // Keep article if it's from an enabled source
+      if (enabledSourceNames.has(article.sourceName)) {
+        return true;
+      }
+      // Keep article if it's bookmarked or in read later, even if source is disabled
+      if (article.isBookmarked || article.isReadLater) {
+        return true;
+      }
+      // Remove article if source is disabled and it's not bookmarked or read later
+      return false;
+    });
   }
 
   filterBySource(articles: NewsArticle[], source: string | null): NewsArticle[] {
@@ -392,6 +434,30 @@ export class NewsService {
     }
   }
 
+  cleanupArticlesFromDisabledSources(): void {
+    const currentArticles = this.allArticles();
+    const enabledSources = this.sourceManagementService.getEnabledSources();
+    const enabledSourceNames = new Set(enabledSources.map(s => s.name));
+
+    const filteredArticles = currentArticles.filter(article => {
+      // Keep article if it's from an enabled source
+      if (enabledSourceNames.has(article.sourceName)) {
+        return true;
+      }
+      // Keep article if it's bookmarked or in read later, even if source is disabled
+      if (article.isBookmarked || article.isReadLater) {
+        return true;
+      }
+      // Remove article if source is disabled and it's not bookmarked or read later
+      return false;
+    });
+
+    if (filteredArticles.length !== currentArticles.length) {
+      this.allArticles.set(filteredArticles);
+      this.saveCachedArticles(filteredArticles);
+    }
+  }
+
   loadFromRSSFeeds(isRefresh: boolean = false): void {
     // Only set loading state if it's a refresh
     if (isRefresh) {
@@ -431,13 +497,13 @@ export class NewsService {
           }
         });
 
-        // If all feeds failed, show error
+        // If all feeds failed, show toast message
         if (allFetchedArticles.length === 0) {
           console.error('All RSS feeds failed');
           if (errors.length > 0) {
-            this.error.set(`RSS feed errors: ${errors.join('; ')}`);
+            this.message.error(`RSS feed errors: ${errors.join('; ')}`);
           } else {
-            this.error.set('Failed to load articles from RSS feeds');
+            this.message.error('Failed to load articles from RSS feeds');
           }
           // Don't clear existing articles on refresh
           if (!isRefresh) {
@@ -455,7 +521,10 @@ export class NewsService {
         const sortedArticles = this.sortArticlesLocally(mergedArticles, this.currentSortOrder());
         this.allArticles.set(sortedArticles);
         this.saveCachedArticles(sortedArticles);
-        this.lastFetchTimestamp.set(new Date());
+
+        const timestamp = new Date();
+        this.lastFetchTimestamp.set(timestamp);
+        this.saveCachedTimestamp(timestamp);
 
         if (isRefresh) {
           this.isRefreshing.set(false);
@@ -464,11 +533,12 @@ export class NewsService {
         // Show warning if some feeds failed
         if (errors.length > 0 && allFetchedArticles.length > 0) {
           console.warn('Some RSS feeds failed:', errors);
+          this.message.warning(`Some feeds failed: ${errors.join(', ')}`);
         }
       },
       error: (err) => {
         console.error('Error loading RSS feeds:', err);
-        this.error.set('Failed to load RSS feeds');
+        this.message.error('Failed to load RSS feeds');
         // Don't clear existing articles on refresh
         if (!isRefresh) {
           this.allArticles.set([]);
