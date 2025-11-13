@@ -1,12 +1,14 @@
-import { Component, signal, inject, OnInit, computed } from '@angular/core';
+import { Component, signal, inject, OnInit, computed, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { ThemeToggleComponent } from './components/theme-toggle.component';
 import { DateRangeFilterComponent, DateRange } from './components/date-range-filter.component';
+import { AddExternalArticleModalComponent } from './components/add-external-article-modal/add-external-article-modal.component';
 import { NewsService, SortOrder } from './services/news.service';
 import { UserPreferencesService, FilterType } from './services/user-preferences.service';
 import { ArticlePersistenceService } from './services/article-persistence.service';
+import { ExternalArticle } from './models/external-article.interface';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -22,6 +24,7 @@ import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
     RouterModule,
     ThemeToggleComponent,
     DateRangeFilterComponent,
+    AddExternalArticleModalComponent,
     NzIconModule,
     NzInputModule,
     NzButtonModule,
@@ -38,6 +41,8 @@ export class App implements OnInit {
   private preferencesService = inject(UserPreferencesService);
   private persistenceService = inject(ArticlePersistenceService);
   private router = inject(Router);
+
+  protected addModal = viewChild.required(AddExternalArticleModalComponent);
 
   protected viewMode = this.preferencesService.viewMode;
   protected sortOrder = this.preferencesService.sortOrder;
@@ -56,9 +61,6 @@ export class App implements OnInit {
   protected lastFetchStatus = this.newsService.lastFetchStatus;
   protected hasEnabledSources = this.newsService.hasEnabledSources;
 
-  // Signal to track external articles count for reactivity
-  private externalArticlesCount = signal(0);
-
   ngOnInit(): void {
     this.newsService.setSortOrder(this.sortOrder());
     this.newsService.setFilter(this.currentFilter());
@@ -70,18 +72,6 @@ export class App implements OnInit {
 
     // Load articles in background without showing main loading indicator
     this.newsService.loadFromRSSFeeds(false);
-    this.updateExternalArticlesCount();
-
-    window.addEventListener('external-articles-changed', () => {
-      this.updateExternalArticlesCount();
-    });
-  }
-
-  private updateExternalArticlesCount(): void {
-    const externalArticles = this.persistenceService.getExternalArticlesList();
-    // Only count external articles that are marked as read later
-    const readLaterCount = externalArticles.filter(article => article.isReadLater !== false).length;
-    this.externalArticlesCount.set(readLaterCount);
   }
 
   protected onFilterChange(filter: FilterType): void {
@@ -152,18 +142,22 @@ export class App implements OnInit {
   }
 
   protected readLaterCount = computed(() => {
-    const internalCount = this.articles().filter(article =>
+    return this.articles().filter(article =>
       article.isReadLater &&
-      !article.isSkipped &&
-      !article.isExternal
+      !article.isSkipped
     ).length;
-    const externalCount = this.externalArticlesCount();
-    return internalCount + externalCount;
   });
 
   protected navigateToReadLater(): void {
     this.router.navigate(['/read-later']);
-    // Update count when navigating (in case user is coming back)
-    setTimeout(() => this.updateExternalArticlesCount(), 100);
+  }
+
+  protected openAddArticleModal(): void {
+    this.addModal().open();
+  }
+
+  protected onArticleAdded(article: ExternalArticle): void {
+    // Add article directly to the main articles list
+    this.newsService.addExternalArticle(article);
   }
 }

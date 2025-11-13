@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ExternalArticle } from '../models/external-article.interface';
 
 export interface ArticleState {
   isRead: boolean;
@@ -18,7 +17,6 @@ export interface ArticleStatesMap {
 })
 export class ArticlePersistenceService {
   private readonly STORAGE_KEY = 'chronicle-article-states';
-  private readonly EXTERNAL_ARTICLES_KEY = 'chronicle-external-articles';
   private readonly MAX_STORAGE_ITEMS = 1000;
 
   saveArticleState(articleId: string, state: Partial<ArticleState>): void {
@@ -152,64 +150,5 @@ export class ArticlePersistenceService {
       count: Object.keys(states).length,
       size: this.getStorageSize()
     };
-  }
-
-  // External Articles Management
-  saveExternalArticle(article: ExternalArticle): void {
-    const articles = this.getAllExternalArticles();
-    articles[article.id] = article;
-    this.saveAllExternalArticles(articles);
-  }
-
-  getExternalArticle(id: string): ExternalArticle | null {
-    const articles = this.getAllExternalArticles();
-    return articles[id] || null;
-  }
-
-  getAllExternalArticles(): Record<string, ExternalArticle> {
-    try {
-      const data = localStorage.getItem(this.EXTERNAL_ARTICLES_KEY);
-      if (!data) return {};
-
-      const parsed = JSON.parse(data);
-      // Convert date strings back to Date objects
-      Object.values(parsed).forEach((article: any) => {
-        if (article.addedAt) {
-          article.addedAt = new Date(article.addedAt);
-        }
-      });
-
-      return parsed as Record<string, ExternalArticle>;
-    } catch (error) {
-      console.error('Error reading external articles from localStorage:', error);
-      return {};
-    }
-  }
-
-  saveAllExternalArticles(articles: Record<string, ExternalArticle>): void {
-    try {
-      localStorage.setItem(this.EXTERNAL_ARTICLES_KEY, JSON.stringify(articles));
-    } catch (error) {
-      console.error('Error saving external articles to localStorage:', error);
-    }
-  }
-
-  removeExternalArticle(id: string): void {
-    const articles = this.getAllExternalArticles();
-    delete articles[id];
-    this.saveAllExternalArticles(articles);
-  }
-
-  clearAllExternalArticles(): void {
-    try {
-      localStorage.removeItem(this.EXTERNAL_ARTICLES_KEY);
-    } catch (error) {
-      console.error('Error clearing external articles:', error);
-    }
-  }
-
-  getExternalArticlesList(): ExternalArticle[] {
-    const articles = this.getAllExternalArticles();
-    return Object.values(articles).sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
   }
 }

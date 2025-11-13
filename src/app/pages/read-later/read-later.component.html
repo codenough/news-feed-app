@@ -26,18 +26,6 @@
     </div>
 
     <div class="header-actions">
-      <button
-        nz-button
-        nzType="primary"
-        nzSize="default"
-        (click)="openAddModal()"
-        aria-label="Add external article"
-        class="add-article-btn"
-      >
-        <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
-        Add Article
-      </button>
-
       @if (readLaterCount() > 0) {
         <button
           nz-button
@@ -66,99 +54,21 @@
         </button>
       </div>
     } @else {
-      <!-- External Articles Section -->
-      @if (externalArticles().length > 0) {
-        <section class="articles-section">
-          <div class="section-header">
-            <h2 class="section-title">
-              <span nz-icon nzType="link" nzTheme="outline" class="section-icon"></span>
-              External Links
-              @if (externalArticles().length > 0) {
-                <nz-badge
-                  [nzCount]="externalArticles().length"
-                  [nzShowZero]="false"
-                  class="section-count-badge"
-                ></nz-badge>
-              }
-            </h2>
-            @if (externalArticles().length > 0) {
-              <button
-                nz-button
-                nzType="text"
-                nzSize="small"
-                (click)="clearExternalArticles()"
-                aria-label="Clear external articles"
-                class="clear-section-btn"
-              >
-                <span nz-icon nzType="close-circle" nzTheme="outline"></span>
-                Clear All
-              </button>
-            }
-          </div>
-          <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
-            @for (article of externalArticlesAsNews(); track article.id) {
-              <app-news-card
-                [article]="article"
-                [viewMode]="viewMode()"
-                (cardClick)="onCardClick($event)"
-                (bookmarkToggle)="onBookmarkToggle($event)"
-                (readLaterToggle)="onReadLaterToggle($event)"
-                (markRead)="onMarkRead($event)"
-                (markUnread)="onMarkUnread($event)"
-                (skip)="onSkip($event)"
-                (undoSkip)="onUndoSkip($event)"
-              />
-            }
-          </div>
-        </section>
-      }
-
-      <!-- Internal Articles Section -->
-      @if (internalReadLaterArticles().length > 0) {
-        <section class="articles-section">
-          <div class="section-header">
-            <h2 class="section-title">
-              <span nz-icon nzType="file-text" nzTheme="outline" class="section-icon"></span>
-              Saved Articles
-              @if (internalReadLaterArticles().length > 0) {
-                <nz-badge
-                  [nzCount]="internalReadLaterArticles().length"
-                  [nzShowZero]="false"
-                  class="section-count-badge"
-                ></nz-badge>
-              }
-            </h2>
-            @if (internalReadLaterArticles().length > 0) {
-              <button
-                nz-button
-                nzType="text"
-                nzSize="small"
-                (click)="clearInternalArticles()"
-                aria-label="Clear saved articles"
-                class="clear-section-btn"
-              >
-                <span nz-icon nzType="close-circle" nzTheme="outline"></span>
-                Clear All
-              </button>
-            }
-          </div>
-          <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
-            @for (article of internalReadLaterArticles(); track article.id) {
-              <app-news-card
-                [article]="article"
-                [viewMode]="viewMode()"
-                (cardClick)="onCardClick($event)"
-                (bookmarkToggle)="onBookmarkToggle($event)"
-                (readLaterToggle)="onReadLaterToggle($event)"
-                (markRead)="onMarkRead($event)"
-                (markUnread)="onMarkUnread($event)"
-                (skip)="onSkip($event)"
-                (undoSkip)="onUndoSkip($event)"
-              />
-            }
-          </div>
-        </section>
-      }
+      <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
+        @for (article of readLaterArticles(); track article.id) {
+          <app-news-card
+            [article]="article"
+            [viewMode]="viewMode()"
+            (cardClick)="onCardClick($event)"
+            (bookmarkToggle)="onBookmarkToggle($event)"
+            (readLaterToggle)="onReadLaterToggle($event)"
+            (markRead)="onMarkRead($event)"
+            (markUnread)="onMarkUnread($event)"
+            (skip)="onSkip($event)"
+            (undoSkip)="onUndoSkip($event)"
+          />
+        }
+      </div>
     }
   </main>
 

@@ -101,6 +101,18 @@
         <div class="header-actions-right">
           <button
             nz-button
+            nzType="primary"
+            nzSize="default"
+            (click)="openAddArticleModal()"
+            aria-label="Add external article"
+            nz-tooltip
+            nzTooltipTitle="Add Article"
+          >
+            <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+          </button>
+
+          <button
+            nz-button
             nzType="default"
             nzSize="default"
             [class.bookmarked-btn--active]="currentFilter() === 'bookmarked'"
@@ -249,4 +261,8 @@
       <router-outlet />
     </main>
   </div>
+
+  <app-add-external-article-modal
+    (articleAdded)="onArticleAdded($event)"
+  />
 </div>

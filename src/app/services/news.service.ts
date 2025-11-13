@@ -33,7 +33,6 @@ export class NewsService {
 
   private articlesSubject = new BehaviorSubject<NewsArticle[]>([]);
   private allArticles = signal<NewsArticle[]>([]);
-  private externalArticles = signal<ExternalArticle[]>([]);
 
   currentFilter = signal<FilterType>('all');
   currentSortOrder = signal<SortOrder>('desc');
@@ -44,30 +43,9 @@ export class NewsService {
     endDate: null,
   });
 
-  // Merge internal and external articles (external only included if bookmarked)
+  // Merge internal and external articles
   private mergedArticles = computed(() => {
-    const internal = this.allArticles();
-    const external = this.externalArticles();
-
-    // Convert bookmarked external articles to NewsArticle format
-    const externalAsNews: NewsArticle[] = external
-      .filter((ext) => ext.isBookmarked)
-      .map((ext) => ({
-        id: ext.id,
-        title: ext.title,
-        description: ext.description || '',
-        url: ext.url,
-        imageUrl: ext.imageUrl || '',
-        publishedAt: ext.addedAt,
-        sourceName: ext.sourceName || 'External Source',
-        isRead: ext.isRead || false,
-        isBookmarked: ext.isBookmarked || false,
-        isReadLater: ext.isReadLater !== false,
-        isSkipped: false,
-        isExternal: true,
-      }));
-
-    return [...internal, ...externalAsNews];
+    return this.allArticles();
   });
 
   articles$ = computed(() => {
@@ -121,16 +99,27 @@ export class NewsService {
     // Load cached articles on initialization
     this.loadCachedArticles();
     this.loadCachedTimestamp();
-    this.loadExternalArticles();
   }
 
-  private loadExternalArticles(): void {
-    const external = this.persistenceService.getExternalArticlesList();
-    this.externalArticles.set(external);
-  }
+  addExternalArticle(external: ExternalArticle): void {
+    const newsArticle: NewsArticle = {
+      id: external.id,
+      title: external.title,
+      description: external.description || '',
+      url: external.url,
+      imageUrl: external.imageUrl || '',
+      publishedAt: external.addedAt,
+      sourceName: external.sourceName || 'External Source',
+      isRead: external.isRead || false,
+      isBookmarked: external.isBookmarked || false,
+      isReadLater: external.isReadLater !== false,
+      isSkipped: false,
+      isExternal: true,
+    };
 
-  refreshExternalArticles(): void {
-    this.loadExternalArticles();
+    const currentArticles = this.allArticles();
+    this.allArticles.set([newsArticle, ...currentArticles]);
+    this.saveCachedArticles(this.allArticles());
   }
 
   private loadCachedArticles(): void {
@@ -290,6 +279,10 @@ export class NewsService {
     const enabledSourceNames = new Set(enabledSources.map((s) => s.name));
 
     return articles.filter((article) => {
+      // Always keep external articles (manually added)
+      if (article.isExternal) {
+        return true;
+      }
       // Keep article if it's from an enabled source
       if (enabledSourceNames.has(article.sourceName)) {
         return true;
@@ -478,6 +471,10 @@ export class NewsService {
     const enabledSourceNames = new Set(enabledSources.map((s) => s.name));
 
     const filteredArticles = currentArticles.filter((article) => {
+      // Always keep external articles (manually added)
+      if (article.isExternal) {
+        return true;
+      }
       // Keep article if it's from an enabled source
       if (enabledSourceNames.has(article.sourceName)) {
         return true;
