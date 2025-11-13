@@ -248,7 +248,13 @@ export class NewsService {
     const updatedArticle = updatedArticles.find(a => a.id === articleId);
     if (updatedArticle) {
       const persistenceKey = this.getArticleUniqueKey(updatedArticle);
-      this.persistenceService.saveArticleState(persistenceKey, { isBookmarked: updatedArticle.isBookmarked });
+      const newState = {
+        isRead: updatedArticle.isRead,
+        isBookmarked: updatedArticle.isBookmarked,
+        isReadLater: updatedArticle.isReadLater,
+        isSkipped: updatedArticle.isSkipped
+      };
+      this.persistenceService.saveArticleState(persistenceKey, newState);
     }
   }
 
@@ -347,100 +353,6 @@ export class NewsService {
     }
   }
 
-  getMockArticles(): NewsArticle[] {
-    return [
-      {
-        id: '1',
-        title: 'Breaking: New Climate Agreement Reached at Global Summit',
-        description: 'World leaders have agreed to ambitious new targets for reducing carbon emissions, marking a historic moment in the fight against climate change.',
-        imageUrl: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=800&h=600&fit=crop',
-        sourceName: 'TechCrunch',
-        publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        url: 'https://example.com/article1',
-        isRead: false,
-        isBookmarked: false,
-        isReadLater: false,
-        isSkipped: false,
-        category: 'Environment'
-      },
-      {
-        id: '2',
-        title: 'Tech Giant Announces Revolutionary AI Breakthrough',
-        description: 'The company\'s latest artificial intelligence system demonstrates unprecedented capabilities in natural language understanding and generation.',
-        imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop',
-        sourceName: 'The Verge',
-        publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
-        url: 'https://example.com/article2',
-        isRead: false,
-        isBookmarked: false,
-        isReadLater: false,
-        isSkipped: false,
-        category: 'Technology'
-      },
-      {
-        id: '3',
-        title: 'Local Community Rallies to Support New Education Initiative',
-        description: 'Residents come together to fund programs aimed at improving educational opportunities for underserved students in the district.',
-        imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop',
-        sourceName: 'Hacker News',
-        publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        url: 'https://example.com/article3',
-        isRead: false,
-        isBookmarked: false,
-        isReadLater: false,
-        isSkipped: false,
-        category: 'Education'
-      },
-      {
-        id: '4',
-        title: 'Stock Markets Show Strong Recovery After Turbulent Week',
-        description: 'Major indices close higher as investors regain confidence following positive economic indicators and corporate earnings reports.',
-        imageUrl: '',
-        sourceName: 'TechCrunch',
-        publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-        url: 'https://example.com/article4',
-        isRead: false,
-        isBookmarked: false,
-        isReadLater: false,
-        isSkipped: false,
-        category: 'Business'
-      },
-      {
-        id: '5',
-        title: 'Medical Researchers Make Breakthrough in Cancer Treatment',
-        description: 'New therapy shows promising results in clinical trials, offering hope to patients with previously untreatable forms of the disease.',
-        imageUrl: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=600&fit=crop',
-        sourceName: 'The Verge',
-        publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-        url: 'https://example.com/article5',
-        isRead: false,
-        isBookmarked: false,
-        isReadLater: false,
-        isSkipped: false,
-        category: 'Health'
-      },
-      {
-        id: '6',
-        title: 'Championship Game Delivers Historic Upset Victory',
-        description: 'Underdog team defeats favorites in thrilling overtime finish, claiming their first title in franchise history.',
-        imageUrl: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=600&fit=crop',
-        sourceName: 'TechCrunch',
-        publishedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
-        url: 'https://example.com/article6',
-        isRead: false,
-        isBookmarked: false,
-        isReadLater: false,
-        isSkipped: false,
-        category: 'Sports'
-      }
-    ];
-  }
-
-  loadMockData(): void {
-    // Try to load from RSS feeds first
-    this.loadFromRSSFeeds();
-  }
-
   loadFromRSSFeeds(): void {
     this.isLoading.set(true);
     this.error.set(null);
@@ -474,13 +386,16 @@ export class NewsService {
           }
         });
 
-        // If all feeds failed, fall back to mock data
+        // If all feeds failed, show error
         if (allFetchedArticles.length === 0) {
-          console.warn('All RSS feeds failed, using mock data');
+          console.error('All RSS feeds failed');
           if (errors.length > 0) {
             this.error.set(`RSS feed errors: ${errors.join('; ')}`);
+          } else {
+            this.error.set('Failed to load articles from RSS feeds');
           }
-          this.loadMockDataFallback();
+          this.allArticles.set([]);
+          this.isLoading.set(false);
           return;
         }
 
@@ -500,7 +415,8 @@ export class NewsService {
       error: (err) => {
         console.error('Error loading RSS feeds:', err);
         this.error.set('Failed to load RSS feeds');
-        this.loadMockDataFallback();
+        this.allArticles.set([]);
+        this.isLoading.set(false);
       }
     });
   }
@@ -563,46 +479,5 @@ export class NewsService {
       return article.url.toLowerCase().trim();
     }
     return `${article.sourceName}-${article.title}`.toLowerCase().trim();
-  }
-
-  private loadMockDataFallback(): void {
-    // Get enabled sources
-    const enabledSources = this.sourceManagementService.getEnabledSources();
-
-    // If no enabled sources, show empty state
-    if (enabledSources.length === 0) {
-      this.allArticles.set([]);
-      this.lastFetchTimestamp.set(new Date());
-      this.isLoading.set(false);
-      return;
-    }
-
-    // Filter mock articles to only show those from enabled sources
-    const mockArticles = this.getMockArticles();
-    const sourceNames = new Set(enabledSources.map(s => s.name));
-
-    const filteredArticles = mockArticles.filter(article =>
-      sourceNames.has(article.sourceName)
-    );
-
-    const articlesWithPersistedState = filteredArticles.map(article => {
-      // Use URL-based key for persistence
-      const persistenceKey = this.getArticleUniqueKey(article);
-      const persistedState = this.persistenceService.getArticleState(persistenceKey);
-      if (persistedState) {
-        return {
-          ...article,
-          isRead: persistedState.isRead,
-          isBookmarked: persistedState.isBookmarked,
-          isReadLater: persistedState.isReadLater,
-          isSkipped: persistedState.isSkipped
-        };
-      }
-      return article;
-    });
-
-    const sortedArticles = this.sortArticlesLocally(articlesWithPersistedState, this.currentSortOrder());
-    this.allArticles.set(sortedArticles);
-    this.isLoading.set(false);
   }
 }

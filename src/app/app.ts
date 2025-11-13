@@ -65,7 +65,7 @@ export class App implements OnInit {
       this.newsService.setDateRange(persistedRange.startDate, persistedRange.endDate);
     }
 
-    this.newsService.loadMockData();
+    this.newsService.loadFromRSSFeeds();
     this.updateExternalArticlesCount();
 
     window.addEventListener('external-articles-changed', () => {
@@ -84,7 +84,7 @@ export class App implements OnInit {
   }
 
   protected onRefresh(): void {
-    this.newsService.loadMockData();
+    this.newsService.loadFromRSSFeeds();
   }
 
   protected onSortChange(order: SortOrder): void {

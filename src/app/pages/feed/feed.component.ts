@@ -132,6 +132,6 @@ export class FeedComponent {
   }
 
   protected onRefresh(): void {
-    this.newsService.loadMockData();
+    this.newsService.loadFromRSSFeeds();
   }
 }
