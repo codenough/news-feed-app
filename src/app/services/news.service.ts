@@ -40,7 +40,9 @@ export class NewsService {
     let filtered = this.filterArticles(this.allArticles(), this.currentFilter());
     filtered = this.filterBySource(filtered, this.selectedSource());
     filtered = this.filterByDateRange(filtered, this.dateRange());
-    return this.searchArticles(filtered, this.searchQuery());
+    filtered = this.searchArticles(filtered, this.searchQuery());
+    // Apply sorting
+    return this.sortArticlesLocally(filtered, this.currentSortOrder());
   });
 
   sources$ = computed(() => {
@@ -125,7 +127,9 @@ export class NewsService {
   }
 
   refresh(): Observable<NewsArticle[]> {
-    return this.fetchArticles();
+    // Use smart merge when refreshing
+    this.loadFromRSSFeeds();
+    return of(this.allArticles());
   }
 
   setSortOrder(order: SortOrder): void {
@@ -226,83 +230,116 @@ export class NewsService {
 
   toggleBookmark(articleId: string): void {
     const articles = this.allArticles();
-    const updatedArticles = articles.map(article =>
-      article.id === articleId
-        ? { ...article, isBookmarked: !article.isBookmarked }
-        : article
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
+    const updatedArticles = articles.map(a =>
+      a.id === articleId
+        ? { ...a, isBookmarked: !a.isBookmarked }
+        : a
     );
     this.allArticles.set(updatedArticles);
 
-    const article = updatedArticles.find(a => a.id === articleId);
-    if (article) {
-      this.persistenceService.saveArticleState(articleId, { isBookmarked: article.isBookmarked });
+    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    if (updatedArticle) {
+      const persistenceKey = this.getArticleUniqueKey(updatedArticle);
+      this.persistenceService.saveArticleState(persistenceKey, { isBookmarked: updatedArticle.isBookmarked });
     }
   }
 
   toggleReadLater(articleId: string): void {
     const articles = this.allArticles();
-    const updatedArticles = articles.map(article =>
-      article.id === articleId
-        ? { ...article, isReadLater: !article.isReadLater }
-        : article
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
+    const updatedArticles = articles.map(a =>
+      a.id === articleId
+        ? { ...a, isReadLater: !a.isReadLater }
+        : a
     );
     this.allArticles.set(updatedArticles);
 
-    const article = updatedArticles.find(a => a.id === articleId);
-    if (article) {
-      this.persistenceService.saveArticleState(articleId, { isReadLater: article.isReadLater });
+    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    if (updatedArticle) {
+      const persistenceKey = this.getArticleUniqueKey(updatedArticle);
+      this.persistenceService.saveArticleState(persistenceKey, { isReadLater: updatedArticle.isReadLater });
     }
   }
 
   markAsRead(articleId: string): void {
     const articles = this.allArticles();
-    const updatedArticles = articles.map(article =>
-      article.id === articleId
-        ? { ...article, isRead: true }
-        : article
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
+    const updatedArticles = articles.map(a =>
+      a.id === articleId
+        ? { ...a, isRead: true }
+        : a
     );
     this.allArticles.set(updatedArticles);
 
-    this.persistenceService.saveArticleState(articleId, { isRead: true });
+    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    if (updatedArticle) {
+      const persistenceKey = this.getArticleUniqueKey(updatedArticle);
+      this.persistenceService.saveArticleState(persistenceKey, { isRead: true });
+    }
   }
 
   toggleReadStatus(articleId: string): void {
     const articles = this.allArticles();
-    const updatedArticles = articles.map(article =>
-      article.id === articleId
-        ? { ...article, isRead: !article.isRead }
-        : article
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
+    const updatedArticles = articles.map(a =>
+      a.id === articleId
+        ? { ...a, isRead: !a.isRead }
+        : a
     );
     this.allArticles.set(updatedArticles);
 
-    const article = updatedArticles.find(a => a.id === articleId);
-    if (article) {
-      this.persistenceService.saveArticleState(articleId, { isRead: article.isRead });
+    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    if (updatedArticle) {
+      const persistenceKey = this.getArticleUniqueKey(updatedArticle);
+      this.persistenceService.saveArticleState(persistenceKey, { isRead: updatedArticle.isRead });
     }
   }
 
   skipArticle(articleId: string): void {
     const articles = this.allArticles();
-    const updatedArticles = articles.map(article =>
-      article.id === articleId
-        ? { ...article, isSkipped: true }
-        : article
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
+    const updatedArticles = articles.map(a =>
+      a.id === articleId
+        ? { ...a, isSkipped: true }
+        : a
     );
     this.allArticles.set(updatedArticles);
 
-    this.persistenceService.saveArticleState(articleId, { isSkipped: true });
+    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    if (updatedArticle) {
+      const persistenceKey = this.getArticleUniqueKey(updatedArticle);
+      this.persistenceService.saveArticleState(persistenceKey, { isSkipped: true });
+    }
   }
 
   undoSkip(articleId: string): void {
     const articles = this.allArticles();
-    const updatedArticles = articles.map(article =>
-      article.id === articleId
-        ? { ...article, isSkipped: false }
-        : article
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
+    const updatedArticles = articles.map(a =>
+      a.id === articleId
+        ? { ...a, isSkipped: false }
+        : a
     );
     this.allArticles.set(updatedArticles);
 
-    this.persistenceService.saveArticleState(articleId, { isSkipped: false });
+    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    if (updatedArticle) {
+      const persistenceKey = this.getArticleUniqueKey(updatedArticle);
+      this.persistenceService.saveArticleState(persistenceKey, { isSkipped: false });
+    }
   }
 
   getMockArticles(): NewsArticle[] {
@@ -443,22 +480,10 @@ export class NewsService {
           return;
         }
 
-        // Apply persisted state to fetched articles
-        const articlesWithPersistedState = allFetchedArticles.map(article => {
-          const persistedState = this.persistenceService.getArticleState(article.id);
-          if (persistedState) {
-            return {
-              ...article,
-              isRead: persistedState.isRead,
-              isBookmarked: persistedState.isBookmarked,
-              isReadLater: persistedState.isReadLater,
-              isSkipped: persistedState.isSkipped
-            };
-          }
-          return article;
-        });
+        // Smart merge: combine new articles with existing ones
+        const mergedArticles = this.mergeArticles(this.allArticles(), allFetchedArticles);
 
-        const sortedArticles = this.sortArticlesLocally(articlesWithPersistedState, this.currentSortOrder());
+        const sortedArticles = this.sortArticlesLocally(mergedArticles, this.currentSortOrder());
         this.allArticles.set(sortedArticles);
         this.lastFetchTimestamp.set(new Date());
         this.isLoading.set(false);
@@ -474,6 +499,66 @@ export class NewsService {
         this.loadMockDataFallback();
       }
     });
+  }
+
+  /**
+   * Smart merge of new articles with existing ones.
+   * - Preserves existing article states (read, bookmarked, read later, skipped)
+   * - Adds only new unique articles
+   * - Maintains old articles
+   * - New articles are added on top (by date)
+   */
+  private mergeArticles(existingArticles: NewsArticle[], newArticles: NewsArticle[]): NewsArticle[] {
+    // Create a map of existing articles by unique identifier
+    const existingMap = new Map<string, NewsArticle>();
+
+    existingArticles.forEach(article => {
+      // Use URL as unique identifier (more reliable than generated IDs)
+      const key = this.getArticleUniqueKey(article);
+      existingMap.set(key, article);
+    });
+
+    // Process new articles
+    const articlesToAdd: NewsArticle[] = [];
+
+    newArticles.forEach(newArticle => {
+      const key = this.getArticleUniqueKey(newArticle);
+      const existing = existingMap.get(key);
+
+      if (existing) {
+        // Article already exists - preserve its state
+        // Don't add to articlesToAdd since it's already in existingArticles
+      } else {
+        // New article - check if it has persisted state using URL-based key
+        const persistedState = this.persistenceService.getArticleState(key);
+        if (persistedState) {
+          articlesToAdd.push({
+            ...newArticle,
+            isRead: persistedState.isRead,
+            isBookmarked: persistedState.isBookmarked,
+            isReadLater: persistedState.isReadLater,
+            isSkipped: persistedState.isSkipped
+          });
+        } else {
+          articlesToAdd.push(newArticle);
+        }
+      }
+    });
+
+    // Combine: new articles first, then existing articles
+    return [...articlesToAdd, ...existingArticles];
+  }
+
+  /**
+   * Generate a unique key for an article based on URL and title
+   * URL is the most reliable identifier across fetches
+   */
+  private getArticleUniqueKey(article: NewsArticle): string {
+    // Use URL as primary key, fallback to title + source
+    if (article.url) {
+      return article.url.toLowerCase().trim();
+    }
+    return `${article.sourceName}-${article.title}`.toLowerCase().trim();
   }
 
   private loadMockDataFallback(): void {
@@ -497,7 +582,9 @@ export class NewsService {
     );
 
     const articlesWithPersistedState = filteredArticles.map(article => {
-      const persistedState = this.persistenceService.getArticleState(article.id);
+      // Use URL-based key for persistence
+      const persistenceKey = this.getArticleUniqueKey(article);
+      const persistedState = this.persistenceService.getArticleState(persistenceKey);
       if (persistedState) {
         return {
           ...article,

@@ -82,13 +82,11 @@ export class App implements OnInit {
   protected onSortChange(order: SortOrder): void {
     this.preferencesService.setSortOrder(order);
     this.newsService.setSortOrder(order);
-    this.newsService.loadMockData();
   }
 
   protected toggleSort(): void {
     this.preferencesService.toggleSortOrder();
     this.newsService.setSortOrder(this.sortOrder());
-    this.newsService.loadMockData();
   }
 
   protected toggleViewMode(): void {
