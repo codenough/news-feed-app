@@ -16,7 +16,11 @@
         <span nz-icon nzType="clock-circle" nzTheme="outline" class="title-icon"></span>
         Read Later
         @if (readLaterCount() > 0) {
-          <span class="article-count">({{ readLaterCount() }})</span>
+          <nz-badge
+            [nzCount]="readLaterCount()"
+            [nzShowZero]="false"
+            class="title-count-badge"
+          ></nz-badge>
         }
       </h1>
     </div>
@@ -101,7 +105,13 @@
             <h2 class="section-title">
               <span nz-icon nzType="link" nzTheme="outline" class="section-icon"></span>
               External Links
-              <span class="section-count">({{ externalArticles().length }})</span>
+              @if (externalArticles().length > 0) {
+                <nz-badge
+                  [nzCount]="externalArticles().length"
+                  [nzShowZero]="false"
+                  class="section-count-badge"
+                ></nz-badge>
+              }
             </h2>
             @if (externalArticles().length > 0) {
               <button
@@ -117,7 +127,7 @@
               </button>
             }
           </div>
-          <div class="news-feed">
+          <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
             @for (article of externalArticlesAsNews(); track article.id) {
               <app-news-card
                 [article]="article"
@@ -142,7 +152,13 @@
             <h2 class="section-title">
               <span nz-icon nzType="file-text" nzTheme="outline" class="section-icon"></span>
               Saved Articles
-              <span class="section-count">({{ internalReadLaterArticles().length }})</span>
+              @if (internalReadLaterArticles().length > 0) {
+                <nz-badge
+                  [nzCount]="internalReadLaterArticles().length"
+                  [nzShowZero]="false"
+                  class="section-count-badge"
+                ></nz-badge>
+              }
             </h2>
             @if (internalReadLaterArticles().length > 0) {
               <button
@@ -158,7 +174,7 @@
               </button>
             }
           </div>
-          <div class="news-feed">
+          <div class="news-feed" [class.news-feed--list]="viewMode() === 'list'">
             @for (article of internalReadLaterArticles(); track article.id) {
               <app-news-card
                 [article]="article"

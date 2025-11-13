@@ -50,11 +50,16 @@
     font-size: 1.75rem;
     color: var(--color-brand-primary);
   }
+}
 
-  .article-count {
-    font-size: 1.25rem;
-    font-weight: 400;
-    color: var(--color-text-secondary);
+.title-count-badge {
+  ::ng-deep .ant-badge-count {
+    background-color: var(--color-brand-accent);
+    color: var(--color-bg-navbar);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 0 0 2px var(--color-bg-page);
   }
 }
 
@@ -212,11 +217,16 @@
     font-size: 1.25rem;
     color: var(--color-brand-primary);
   }
+}
 
-  .section-count {
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--color-text-secondary);
+.section-count-badge {
+  ::ng-deep .ant-badge-count {
+    background-color: var(--color-brand-accent);
+    color: var(--color-bg-navbar);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 0 0 2px var(--color-bg-page);
   }
 }
 

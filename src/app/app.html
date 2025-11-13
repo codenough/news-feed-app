@@ -66,21 +66,26 @@
           </button>
         </div>
         <div class="header-controls">
-          <nz-badge [nzCount]="readLaterCount()" [nzShowZero]="false" class="read-later-badge">
-            <button
-              nz-button
-              nzType="default"
-              nzSize="default"
-              (click)="navigateToReadLater()"
-              aria-label="View read later articles"
-              nz-tooltip
-              nzTooltipTitle="Read Later"
-              class="read-later-btn"
-            >
-              <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
-              <span class="btn-label">Read Later</span>
-            </button>
-          </nz-badge>
+          <button
+            nz-button
+            nzType="default"
+            nzSize="default"
+            (click)="navigateToReadLater()"
+            aria-label="View read later articles"
+            nz-tooltip
+            nzTooltipTitle="Read Later"
+            class="read-later-btn"
+          >
+            <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+            <span class="btn-label">Read Later</span>
+            @if (readLaterCount() > 0) {
+              <nz-badge
+                [nzCount]="readLaterCount()"
+                [nzShowZero]="false"
+                class="read-later-count-badge"
+              ></nz-badge>
+            }
+          </button>
 
           <button
             nz-button
@@ -198,9 +203,11 @@
               >
                 <span class="source-name">{{ source.name }}</span>
                 @if (source.unreadCount > 0) {
-                  <span class="unread-badge" [attr.aria-label]="source.unreadCount + ' unread articles'">
-                    {{ source.unreadCount }}
-                  </span>
+                  <nz-badge
+                    [nzCount]="source.unreadCount"
+                    [nzShowZero]="false"
+                    class="source-unread-badge"
+                  ></nz-badge>
                 }
               </button>
             </li>

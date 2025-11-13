@@ -8,14 +8,16 @@ import { ExternalArticle } from '../../models/external-article.interface';
 import { NewsService } from '../../services/news.service';
 import { ArticlePersistenceService } from '../../services/article-persistence.service';
 import { MetadataExtractionService } from '../../services/metadata-extraction.service';
+import { UserPreferencesService } from '../../services/user-preferences.service';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 
 @Component({
   selector: 'app-read-later',
   standalone: true,
-  imports: [CommonModule, FormsModule, NewsCardComponent, NzButtonModule, NzIconModule, NzInputModule],
+  imports: [CommonModule, FormsModule, NewsCardComponent, NzButtonModule, NzIconModule, NzInputModule, NzBadgeModule],
   templateUrl: './read-later.component.html',
   styleUrl: './read-later.component.scss'
 })
@@ -23,6 +25,7 @@ export class ReadLaterComponent {
   private newsService = inject(NewsService);
   private persistenceService = inject(ArticlePersistenceService);
   private metadataService = inject(MetadataExtractionService);
+  private preferencesService = inject(UserPreferencesService);
   private router = inject(Router);
 
   // URL input state
@@ -64,8 +67,8 @@ export class ReadLaterComponent {
 
   protected readLaterCount = computed(() => this.readLaterArticles().length);
 
-  // Always use grid view for read later page
-  protected viewMode = () => 'grid' as const;
+  // Use global view mode preference
+  protected viewMode = this.preferencesService.viewMode;
 
   constructor() {
     this.loadExternalArticles();
