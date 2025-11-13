@@ -72,6 +72,7 @@ export class NewsService {
   });
 
   lastFetchTimestamp = signal<Date | null>(null);
+  lastFetchStatus = signal<'success' | 'error' | 'partial' | null>(null);
   isLoading = signal<boolean>(false);
   isRefreshing = signal<boolean>(false);
   error = signal<string | null>(null);
@@ -459,10 +460,8 @@ export class NewsService {
   }
 
   loadFromRSSFeeds(isRefresh: boolean = false): void {
-    // Only set loading state if it's a refresh
-    if (isRefresh) {
-      this.isRefreshing.set(true);
-    }
+    // Always show refreshing state on the button
+    this.isRefreshing.set(true);
 
     this.error.set(null);
 
@@ -472,9 +471,7 @@ export class NewsService {
     // If no enabled sources, show empty state
     if (enabledSources.length === 0) {
       this.allArticles.set([]);
-      if (isRefresh) {
-        this.isRefreshing.set(false);
-      }
+      this.isRefreshing.set(false);
       return;
     }
 
@@ -509,9 +506,8 @@ export class NewsService {
           if (!isRefresh) {
             this.allArticles.set([]);
           }
-          if (isRefresh) {
-            this.isRefreshing.set(false);
-          }
+          this.lastFetchStatus.set('error');
+          this.isRefreshing.set(false);
           return;
         }
 
@@ -527,9 +523,8 @@ export class NewsService {
         this.lastFetchTimestamp.set(timestamp);
         this.saveCachedTimestamp(timestamp);
 
-        if (isRefresh) {
-          this.isRefreshing.set(false);
-        }
+        this.lastFetchStatus.set('success');
+        this.isRefreshing.set(false);
 
         // Show success message
         const newArticlesCount = sortedArticles.length - currentArticlesCount;
@@ -543,6 +538,7 @@ export class NewsService {
         if (errors.length > 0 && allFetchedArticles.length > 0) {
           console.warn('Some RSS feeds failed:', errors);
           this.message.warning(`Some feeds failed: ${errors.join(', ')}`);
+          this.lastFetchStatus.set('partial');
         }
       },
       error: (err) => {
@@ -552,9 +548,8 @@ export class NewsService {
         if (!isRefresh) {
           this.allArticles.set([]);
         }
-        if (isRefresh) {
-          this.isRefreshing.set(false);
-        }
+        this.lastFetchStatus.set('error');
+        this.isRefreshing.set(false);
       }
     });
   }

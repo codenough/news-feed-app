@@ -53,6 +53,7 @@ export class App implements OnInit {
   protected isRefreshing = this.newsService.isRefreshing;
   protected error = this.newsService.error;
   protected lastFetchTimestamp = this.newsService.lastFetchTimestamp;
+  protected lastFetchStatus = this.newsService.lastFetchStatus;
 
   // Signal to track external articles count for reactivity
   private externalArticlesCount = signal(0);

@@ -118,6 +118,15 @@
           @if (lastFetchTimestamp()) {
             <span class="last-updated">
               Last updated: {{ getFormattedTimestamp() }}
+              @if (lastFetchStatus()) {
+                <span
+                  class="status-indicator"
+                  [class.status-indicator--success]="lastFetchStatus() === 'success'"
+                  [class.status-indicator--error]="lastFetchStatus() === 'error'"
+                  [class.status-indicator--partial]="lastFetchStatus() === 'partial'"
+                  [attr.aria-label]="lastFetchStatus() === 'success' ? 'Last fetch succeeded' : lastFetchStatus() === 'partial' ? 'Last fetch partially succeeded' : 'Last fetch failed'"
+                ></span>
+              }
             </span>
           }
         </div>

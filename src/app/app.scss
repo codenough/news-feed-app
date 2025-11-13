@@ -381,6 +381,28 @@
   font-size: 0.875rem;
   color: var(--color-text-tertiary);
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--success {
+    background-color: #52c41a;
+  }
+
+  &--error {
+    background-color: #ff4d4f;
+  }
+
+  &--partial {
+    background-color: #fa8c16;
+  }
 }
 
 .view-toggle-btn {
