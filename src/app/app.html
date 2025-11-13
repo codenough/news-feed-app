@@ -106,8 +106,8 @@
             nzType="default"
             nzSize="default"
             (click)="onRefresh()"
-            [nzLoading]="isLoading()"
-            [disabled]="isLoading()"
+            [nzLoading]="isRefreshing()"
+            [disabled]="isRefreshing()"
             aria-label="Refresh feed"
             nz-tooltip
             nzTooltipTitle="Refresh feed"

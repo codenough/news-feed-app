@@ -26,6 +26,7 @@ export interface FetchArticlesParams {
 })
 export class NewsService {
   private readonly API_BASE_URL = '/api/news';
+  private readonly CACHED_ARTICLES_KEY = 'chronicle-cached-articles';
 
   private articlesSubject = new BehaviorSubject<NewsArticle[]>([]);
   private allArticles = signal<NewsArticle[]>([]);
@@ -69,13 +70,51 @@ export class NewsService {
 
   lastFetchTimestamp = signal<Date | null>(null);
   isLoading = signal<boolean>(false);
+  isRefreshing = signal<boolean>(false);
   error = signal<string | null>(null);
 
   private persistenceService = inject(ArticlePersistenceService);
   private sourceManagementService = inject(SourceManagementService);
   private rssParserService = inject(RssParserService);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Load cached articles on initialization
+    this.loadCachedArticles();
+  }
+
+  private loadCachedArticles(): void {
+    try {
+      const cached = localStorage.getItem(this.CACHED_ARTICLES_KEY);
+      if (cached) {
+        const articles = JSON.parse(cached) as NewsArticle[];
+        // Convert date strings back to Date objects
+        articles.forEach(article => {
+          article.publishedAt = new Date(article.publishedAt);
+        });
+        this.allArticles.set(articles);
+      }
+    } catch (error) {
+      console.error('Error loading cached articles:', error);
+    }
+  }
+
+  private saveCachedArticles(articles: NewsArticle[]): void {
+    try {
+      localStorage.setItem(this.CACHED_ARTICLES_KEY, JSON.stringify(articles));
+    } catch (error) {
+      console.error('Error saving cached articles:', error);
+      // If quota exceeded, try to clear old data
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        // Keep only recent articles
+        const recentArticles = articles.slice(0, 50);
+        try {
+          localStorage.setItem(this.CACHED_ARTICLES_KEY, JSON.stringify(recentArticles));
+        } catch (e) {
+          console.error('Failed to save even reduced article set:', e);
+        }
+      }
+    }
+  }
 
   fetchArticles(params: FetchArticlesParams = {}): Observable<NewsArticle[]> {
     this.isLoading.set(true);
@@ -353,8 +392,12 @@ export class NewsService {
     }
   }
 
-  loadFromRSSFeeds(): void {
-    this.isLoading.set(true);
+  loadFromRSSFeeds(isRefresh: boolean = false): void {
+    // Only set loading state if it's a refresh
+    if (isRefresh) {
+      this.isRefreshing.set(true);
+    }
+
     this.error.set(null);
 
     // Get enabled sources
@@ -363,7 +406,9 @@ export class NewsService {
     // If no enabled sources, show empty state
     if (enabledSources.length === 0) {
       this.allArticles.set([]);
-      this.isLoading.set(false);
+      if (isRefresh) {
+        this.isRefreshing.set(false);
+      }
       return;
     }
 
@@ -394,8 +439,13 @@ export class NewsService {
           } else {
             this.error.set('Failed to load articles from RSS feeds');
           }
-          this.allArticles.set([]);
-          this.isLoading.set(false);
+          // Don't clear existing articles on refresh
+          if (!isRefresh) {
+            this.allArticles.set([]);
+          }
+          if (isRefresh) {
+            this.isRefreshing.set(false);
+          }
           return;
         }
 
@@ -404,8 +454,12 @@ export class NewsService {
 
         const sortedArticles = this.sortArticlesLocally(mergedArticles, this.currentSortOrder());
         this.allArticles.set(sortedArticles);
+        this.saveCachedArticles(sortedArticles);
         this.lastFetchTimestamp.set(new Date());
-        this.isLoading.set(false);
+
+        if (isRefresh) {
+          this.isRefreshing.set(false);
+        }
 
         // Show warning if some feeds failed
         if (errors.length > 0 && allFetchedArticles.length > 0) {
@@ -415,8 +469,13 @@ export class NewsService {
       error: (err) => {
         console.error('Error loading RSS feeds:', err);
         this.error.set('Failed to load RSS feeds');
-        this.allArticles.set([]);
-        this.isLoading.set(false);
+        // Don't clear existing articles on refresh
+        if (!isRefresh) {
+          this.allArticles.set([]);
+        }
+        if (isRefresh) {
+          this.isRefreshing.set(false);
+        }
       }
     });
   }

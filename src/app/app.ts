@@ -50,6 +50,7 @@ export class App implements OnInit {
   protected articles = this.newsService.articles$;
 
   protected isLoading = this.newsService.isLoading;
+  protected isRefreshing = this.newsService.isRefreshing;
   protected error = this.newsService.error;
   protected lastFetchTimestamp = this.newsService.lastFetchTimestamp;
 
@@ -65,7 +66,8 @@ export class App implements OnInit {
       this.newsService.setDateRange(persistedRange.startDate, persistedRange.endDate);
     }
 
-    this.newsService.loadFromRSSFeeds();
+    // Load articles in background without showing main loading indicator
+    this.newsService.loadFromRSSFeeds(false);
     this.updateExternalArticlesCount();
 
     window.addEventListener('external-articles-changed', () => {
@@ -84,7 +86,7 @@ export class App implements OnInit {
   }
 
   protected onRefresh(): void {
-    this.newsService.loadFromRSSFeeds();
+    this.newsService.loadFromRSSFeeds(true);
   }
 
   protected onSortChange(order: SortOrder): void {

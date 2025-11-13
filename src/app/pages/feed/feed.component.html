@@ -12,7 +12,7 @@
   </div>
 }
 
-@if (isLoading()) {
+@if (isLoading() && articles().length === 0) {
   <div class="loading-container">
     <div class="loading-spinner"></div>
     <p class="loading-text">Loading articles...</p>
