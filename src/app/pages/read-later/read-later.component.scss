@@ -6,6 +6,11 @@
 }
 
 .read-later-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--color-bg-page);
+  padding-top: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
