@@ -82,6 +82,10 @@ export class NewsService {
   private rssParserService = inject(RssParserService);
   private message = inject(NzMessageService);
 
+  hasEnabledSources = computed(() => {
+    return this.sourceManagementService.getEnabledSources().length > 0;
+  });
+
   constructor(private http: HttpClient) {
     // Load cached articles on initialization
     this.loadCachedArticles();
@@ -460,20 +464,18 @@ export class NewsService {
   }
 
   loadFromRSSFeeds(isRefresh: boolean = false): void {
-    // Always show refreshing state on the button
-    this.isRefreshing.set(true);
-
     this.error.set(null);
 
     // Get enabled sources
     const enabledSources = this.sourceManagementService.getEnabledSources();
 
-    // If no enabled sources, show empty state
+    // If no enabled sources, don't proceed (but keep existing cached articles)
     if (enabledSources.length === 0) {
-      this.allArticles.set([]);
-      this.isRefreshing.set(false);
       return;
     }
+
+    // Show refreshing state on the button
+    this.isRefreshing.set(true);
 
     // Fetch from all enabled RSS feeds
     const feedRequests = enabledSources.map(source =>

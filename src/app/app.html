@@ -107,10 +107,10 @@
             nzSize="default"
             (click)="onRefresh()"
             [nzLoading]="isRefreshing()"
-            [disabled]="isRefreshing()"
+            [disabled]="isRefreshing() || !hasEnabledSources()"
             aria-label="Refresh feed"
             nz-tooltip
-            nzTooltipTitle="Refresh feed"
+            [nzTooltipTitle]="hasEnabledSources() ? 'Refresh feed' : 'No sources enabled'"
           >
             <span nz-icon nzType="reload" nzTheme="outline"></span>
           </button>
