@@ -109,7 +109,6 @@ export class AdminComponent {
             success: true,
             articles: previewArticles,
           });
-          this.message.success(`Successfully fetched ${result.articles.length} articles`);
           this.showTestResults.set(true);
         } else {
           this.testResult.set({
@@ -152,14 +151,11 @@ export class AdminComponent {
     if (this.isEditMode()) {
       const sourceId = this.currentSource().id!;
       const success = this.sourceManagementService.updateSource(sourceId, name, url, enabled);
-      if (success) {
-        this.message.success('Source updated successfully');
-      } else {
+      if (!success) {
         this.message.error('Failed to update source');
       }
     } else {
       this.sourceManagementService.addSource(name, url, enabled);
-      this.message.success('Source added successfully');
     }
 
     this.isModalVisible.set(false);
@@ -168,7 +164,6 @@ export class AdminComponent {
   toggleSource(source: NewsSource): void {
     const success = this.sourceManagementService.toggleSource(source.id);
     if (success) {
-      this.message.success(`Source ${!source.enabled ? 'enabled' : 'disabled'} successfully`);
       // Clean up articles from disabled sources
       this.newsService.cleanupArticlesFromDisabledSources();
     } else {
@@ -179,7 +174,6 @@ export class AdminComponent {
   deleteSource(source: NewsSource): void {
     const success = this.sourceManagementService.deleteSource(source.id);
     if (success) {
-      this.message.success('Source deleted successfully');
       // Clean up articles from deleted source
       this.newsService.cleanupArticlesFromDisabledSources();
     } else {

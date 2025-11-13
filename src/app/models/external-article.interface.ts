@@ -9,6 +9,7 @@ export interface ExternalArticle {
   isExternal: true;
   isRead?: boolean;
   isBookmarked?: boolean;
+  isReadLater?: boolean;
 }
 
 export interface ArticleMetadata {

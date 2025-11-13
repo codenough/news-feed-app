@@ -74,7 +74,10 @@ export class ReadLaterComponent {
     const external = this.externalArticles();
     const query = this.newsService.searchQuery().toLowerCase().trim();
 
-    const converted = external.map((ext) => ({
+    // Only show external articles that are marked as read later
+    const readLaterExternal = external.filter(ext => ext.isReadLater !== false);
+
+    const converted = readLaterExternal.map((ext) => ({
       id: ext.id,
       title: ext.title,
       description: ext.description || '',
@@ -84,7 +87,7 @@ export class ReadLaterComponent {
       sourceName: ext.sourceName || 'External Source',
       isRead: ext.isRead || false,
       isBookmarked: ext.isBookmarked || false,
-      isReadLater: true,
+      isReadLater: ext.isReadLater !== false,
       isSkipped: false,
       isExternal: true,
     }));
@@ -204,9 +207,6 @@ export class ReadLaterComponent {
 
     // Notify other components about the change
     this.notifyExternalArticlesChanged();
-
-    // Show success message
-    this.message.success('Article added to Read Later!');
   }
 
   protected onCardClick(article: NewsArticle): void {
@@ -249,7 +249,14 @@ export class ReadLaterComponent {
 
     if (article) {
       const updatedArticle = { ...article, isBookmarked: !article.isBookmarked };
-      this.persistenceService.saveExternalArticle(updatedArticle);
+
+      // If article is not bookmarked and not in read later, remove it from storage
+      if (!updatedArticle.isBookmarked && !updatedArticle.isReadLater) {
+        this.persistenceService.removeExternalArticle(articleId);
+      } else {
+        this.persistenceService.saveExternalArticle(updatedArticle);
+      }
+
       this.loadExternalArticles();
       // Notify news service to refresh external articles in main feed
       this.newsService.refreshExternalArticles();
@@ -259,10 +266,23 @@ export class ReadLaterComponent {
   protected onReadLaterToggle(article: NewsArticle): void {
     // Check if it's an external article
     if (article.isExternal) {
-      // Remove from external articles
-      this.persistenceService.removeExternalArticle(article.id);
-      this.loadExternalArticles();
-      this.notifyExternalArticlesChanged();
+      const articles = this.externalArticles();
+      const externalArticle = articles.find((a) => a.id === article.id);
+
+      if (externalArticle) {
+        const updatedArticle = { ...externalArticle, isReadLater: false };
+
+        // If article is not bookmarked and not in read later, remove it from storage
+        if (!updatedArticle.isBookmarked && !updatedArticle.isReadLater) {
+          this.persistenceService.removeExternalArticle(article.id);
+        } else {
+          this.persistenceService.saveExternalArticle(updatedArticle);
+        }
+
+        this.loadExternalArticles();
+        this.notifyExternalArticlesChanged();
+        this.newsService.refreshExternalArticles();
+      }
     } else {
       // Toggle internal article
       this.newsService.toggleReadLater(article.id);
@@ -324,9 +344,23 @@ export class ReadLaterComponent {
   }
 
   protected clearExternalArticles(): void {
-    this.persistenceService.clearAllExternalArticles();
+    const articles = this.externalArticles();
+
+    articles.forEach(article => {
+      // Check if article is bookmarked before removing from read later
+      if (article.isBookmarked === true) {
+        // Keep bookmarked articles but mark as not in read later
+        const updatedArticle = { ...article, isReadLater: false };
+        this.persistenceService.saveExternalArticle(updatedArticle);
+      } else {
+        // Remove non-bookmarked articles from storage entirely
+        this.persistenceService.removeExternalArticle(article.id);
+      }
+    });
+
     this.loadExternalArticles();
     this.notifyExternalArticlesChanged();
+    this.newsService.refreshExternalArticles();
   }
 
   protected clearInternalArticles(): void {

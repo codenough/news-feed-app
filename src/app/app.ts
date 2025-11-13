@@ -79,7 +79,9 @@ export class App implements OnInit {
 
   private updateExternalArticlesCount(): void {
     const externalArticles = this.persistenceService.getExternalArticlesList();
-    this.externalArticlesCount.set(externalArticles.length);
+    // Only count external articles that are marked as read later
+    const readLaterCount = externalArticles.filter(article => article.isReadLater !== false).length;
+    this.externalArticlesCount.set(readLaterCount);
   }
 
   protected onFilterChange(filter: FilterType): void {
@@ -150,7 +152,11 @@ export class App implements OnInit {
   }
 
   protected readLaterCount = computed(() => {
-    const internalCount = this.articles().filter(article => article.isReadLater && !article.isSkipped).length;
+    const internalCount = this.articles().filter(article =>
+      article.isReadLater &&
+      !article.isSkipped &&
+      !article.isExternal
+    ).length;
     const externalCount = this.externalArticlesCount();
     return internalCount + externalCount;
   });

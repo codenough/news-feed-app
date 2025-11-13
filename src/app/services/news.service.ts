@@ -1,12 +1,12 @@
-import { Injectable, signal, inject, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, catchError, of, forkJoin } from 'rxjs';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NewsArticle } from '../models/news-article.interface';
+import { BehaviorSubject, catchError, forkJoin, Observable, of, tap } from 'rxjs';
 import { ExternalArticle } from '../models/external-article.interface';
+import { NewsArticle } from '../models/news-article.interface';
 import { ArticlePersistenceService } from './article-persistence.service';
-import { SourceManagementService } from './source-management.service';
 import { RssParserService } from './rss-parser.service';
+import { SourceManagementService } from './source-management.service';
 
 export type SortOrder = 'desc' | 'asc';
 export type FilterType = 'all' | 'unread' | 'read' | 'bookmarked';
@@ -24,7 +24,7 @@ export interface FetchArticlesParams {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NewsService {
   private readonly API_BASE_URL = '/api/news';
@@ -39,7 +39,10 @@ export class NewsService {
   currentSortOrder = signal<SortOrder>('desc');
   searchQuery = signal<string>('');
   selectedSource = signal<string | null>(null);
-  dateRange = signal<{ startDate: Date | null; endDate: Date | null }>({ startDate: null, endDate: null });
+  dateRange = signal<{ startDate: Date | null; endDate: Date | null }>({
+    startDate: null,
+    endDate: null,
+  });
 
   // Merge internal and external articles (external only included if bookmarked)
   private mergedArticles = computed(() => {
@@ -48,8 +51,8 @@ export class NewsService {
 
     // Convert bookmarked external articles to NewsArticle format
     const externalAsNews: NewsArticle[] = external
-      .filter(ext => ext.isBookmarked)
-      .map(ext => ({
+      .filter((ext) => ext.isBookmarked)
+      .map((ext) => ({
         id: ext.id,
         title: ext.title,
         description: ext.description || '',
@@ -59,9 +62,9 @@ export class NewsService {
         sourceName: ext.sourceName || 'External Source',
         isRead: ext.isRead || false,
         isBookmarked: ext.isBookmarked || false,
-        isReadLater: true,
+        isReadLater: ext.isReadLater !== false,
         isSkipped: false,
-        isExternal: true
+        isExternal: true,
       }));
 
     return [...internal, ...externalAsNews];
@@ -81,7 +84,7 @@ export class NewsService {
     const articles = this.allArticles();
     const sourcesMap = new Map<string, { total: number; unread: number }>();
 
-    articles.forEach(article => {
+    articles.forEach((article) => {
       const existing = sourcesMap.get(article.sourceName) || { total: 0, unread: 0 };
       existing.total++;
       if (!article.isRead) {
@@ -94,7 +97,7 @@ export class NewsService {
       .map(([name, counts]) => ({
         name,
         total: counts.total,
-        unreadCount: counts.unread
+        unreadCount: counts.unread,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
@@ -136,7 +139,7 @@ export class NewsService {
       if (cached) {
         const articles = JSON.parse(cached) as NewsArticle[];
         // Convert date strings back to Date objects
-        articles.forEach(article => {
+        articles.forEach((article) => {
           article.publishedAt = new Date(article.publishedAt);
         });
         this.allArticles.set(articles);
@@ -192,14 +195,15 @@ export class NewsService {
       sortOrder: this.currentSortOrder(),
       page: 1,
       pageSize: 20,
-      ...params
+      ...params,
     };
 
     let httpParams = new HttpParams();
     if (defaultParams.sortBy) httpParams = httpParams.set('sortBy', defaultParams.sortBy);
     if (defaultParams.sortOrder) httpParams = httpParams.set('sortOrder', defaultParams.sortOrder);
     if (defaultParams.page) httpParams = httpParams.set('page', defaultParams.page.toString());
-    if (defaultParams.pageSize) httpParams = httpParams.set('pageSize', defaultParams.pageSize.toString());
+    if (defaultParams.pageSize)
+      httpParams = httpParams.set('pageSize', defaultParams.pageSize.toString());
     if (defaultParams.category) httpParams = httpParams.set('category', defaultParams.category);
     if (defaultParams.searchQuery) httpParams = httpParams.set('q', defaultParams.searchQuery);
     if (defaultParams.sources && defaultParams.sources.length > 0) {
@@ -213,17 +217,17 @@ export class NewsService {
     }
 
     return this.http.get<NewsArticle[]>(this.API_BASE_URL, { params: httpParams }).pipe(
-      tap(articles => {
-        const parsedArticles = articles.map(article => ({
+      tap((articles) => {
+        const parsedArticles = articles.map((article) => ({
           ...article,
-          publishedAt: new Date(article.publishedAt)
+          publishedAt: new Date(article.publishedAt),
         }));
 
         this.articlesSubject.next(parsedArticles);
         this.lastFetchTimestamp.set(new Date());
         this.isLoading.set(false);
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error fetching articles:', error);
         this.error.set(error.message || 'Failed to fetch articles');
         this.isLoading.set(false);
@@ -270,11 +274,11 @@ export class NewsService {
   filterArticles(articles: NewsArticle[], filter: FilterType): NewsArticle[] {
     switch (filter) {
       case 'unread':
-        return articles.filter(article => !article.isRead);
+        return articles.filter((article) => !article.isRead);
       case 'read':
-        return articles.filter(article => article.isRead);
+        return articles.filter((article) => article.isRead);
       case 'bookmarked':
-        return articles.filter(article => article.isBookmarked);
+        return articles.filter((article) => article.isBookmarked);
       case 'all':
       default:
         return articles;
@@ -283,9 +287,9 @@ export class NewsService {
 
   filterByEnabledSources(articles: NewsArticle[]): NewsArticle[] {
     const enabledSources = this.sourceManagementService.getEnabledSources();
-    const enabledSourceNames = new Set(enabledSources.map(s => s.name));
+    const enabledSourceNames = new Set(enabledSources.map((s) => s.name));
 
-    return articles.filter(article => {
+    return articles.filter((article) => {
       // Keep article if it's from an enabled source
       if (enabledSourceNames.has(article.sourceName)) {
         return true;
@@ -303,15 +307,18 @@ export class NewsService {
     if (!source) {
       return articles;
     }
-    return articles.filter(article => article.sourceName === source);
+    return articles.filter((article) => article.sourceName === source);
   }
 
-  filterByDateRange(articles: NewsArticle[], range: { startDate: Date | null; endDate: Date | null }): NewsArticle[] {
+  filterByDateRange(
+    articles: NewsArticle[],
+    range: { startDate: Date | null; endDate: Date | null }
+  ): NewsArticle[] {
     if (!range.startDate && !range.endDate) {
       return articles;
     }
 
-    return articles.filter(article => {
+    return articles.filter((article) => {
       const articleDate = new Date(article.publishedAt);
       articleDate.setHours(0, 0, 0, 0);
 
@@ -346,37 +353,35 @@ export class NewsService {
 
     const searchTerms = query.toLowerCase().trim().split(/\s+/);
 
-    return articles.filter(article => {
+    return articles.filter((article) => {
       const titleLower = article.title.toLowerCase();
       const descriptionLower = article.description.toLowerCase();
 
       // Check if all search terms exist in either title or description
-      return searchTerms.every(term =>
-        titleLower.includes(term) || descriptionLower.includes(term)
+      return searchTerms.every(
+        (term) => titleLower.includes(term) || descriptionLower.includes(term)
       );
     });
   }
 
   toggleBookmark(articleId: string): void {
     const articles = this.allArticles();
-    const article = articles.find(a => a.id === articleId);
+    const article = articles.find((a) => a.id === articleId);
     if (!article) return;
 
-    const updatedArticles = articles.map(a =>
-      a.id === articleId
-        ? { ...a, isBookmarked: !a.isBookmarked }
-        : a
+    const updatedArticles = articles.map((a) =>
+      a.id === articleId ? { ...a, isBookmarked: !a.isBookmarked } : a
     );
     this.allArticles.set(updatedArticles);
 
-    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    const updatedArticle = updatedArticles.find((a) => a.id === articleId);
     if (updatedArticle) {
       const persistenceKey = this.getArticleUniqueKey(updatedArticle);
       const newState = {
         isRead: updatedArticle.isRead,
         isBookmarked: updatedArticle.isBookmarked,
         isReadLater: updatedArticle.isReadLater,
-        isSkipped: updatedArticle.isSkipped
+        isSkipped: updatedArticle.isSkipped,
       };
       this.persistenceService.saveArticleState(persistenceKey, newState);
     }
@@ -384,36 +389,32 @@ export class NewsService {
 
   toggleReadLater(articleId: string): void {
     const articles = this.allArticles();
-    const article = articles.find(a => a.id === articleId);
+    const article = articles.find((a) => a.id === articleId);
     if (!article) return;
 
-    const updatedArticles = articles.map(a =>
-      a.id === articleId
-        ? { ...a, isReadLater: !a.isReadLater }
-        : a
+    const updatedArticles = articles.map((a) =>
+      a.id === articleId ? { ...a, isReadLater: !a.isReadLater } : a
     );
     this.allArticles.set(updatedArticles);
 
-    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    const updatedArticle = updatedArticles.find((a) => a.id === articleId);
     if (updatedArticle) {
       const persistenceKey = this.getArticleUniqueKey(updatedArticle);
-      this.persistenceService.saveArticleState(persistenceKey, { isReadLater: updatedArticle.isReadLater });
+      this.persistenceService.saveArticleState(persistenceKey, {
+        isReadLater: updatedArticle.isReadLater,
+      });
     }
   }
 
   markAsRead(articleId: string): void {
     const articles = this.allArticles();
-    const article = articles.find(a => a.id === articleId);
+    const article = articles.find((a) => a.id === articleId);
     if (!article) return;
 
-    const updatedArticles = articles.map(a =>
-      a.id === articleId
-        ? { ...a, isRead: true }
-        : a
-    );
+    const updatedArticles = articles.map((a) => (a.id === articleId ? { ...a, isRead: true } : a));
     this.allArticles.set(updatedArticles);
 
-    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    const updatedArticle = updatedArticles.find((a) => a.id === articleId);
     if (updatedArticle) {
       const persistenceKey = this.getArticleUniqueKey(updatedArticle);
       this.persistenceService.saveArticleState(persistenceKey, { isRead: true });
@@ -422,17 +423,15 @@ export class NewsService {
 
   toggleReadStatus(articleId: string): void {
     const articles = this.allArticles();
-    const article = articles.find(a => a.id === articleId);
+    const article = articles.find((a) => a.id === articleId);
     if (!article) return;
 
-    const updatedArticles = articles.map(a =>
-      a.id === articleId
-        ? { ...a, isRead: !a.isRead }
-        : a
+    const updatedArticles = articles.map((a) =>
+      a.id === articleId ? { ...a, isRead: !a.isRead } : a
     );
     this.allArticles.set(updatedArticles);
 
-    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    const updatedArticle = updatedArticles.find((a) => a.id === articleId);
     if (updatedArticle) {
       const persistenceKey = this.getArticleUniqueKey(updatedArticle);
       this.persistenceService.saveArticleState(persistenceKey, { isRead: updatedArticle.isRead });
@@ -441,17 +440,15 @@ export class NewsService {
 
   skipArticle(articleId: string): void {
     const articles = this.allArticles();
-    const article = articles.find(a => a.id === articleId);
+    const article = articles.find((a) => a.id === articleId);
     if (!article) return;
 
-    const updatedArticles = articles.map(a =>
-      a.id === articleId
-        ? { ...a, isSkipped: true }
-        : a
+    const updatedArticles = articles.map((a) =>
+      a.id === articleId ? { ...a, isSkipped: true } : a
     );
     this.allArticles.set(updatedArticles);
 
-    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    const updatedArticle = updatedArticles.find((a) => a.id === articleId);
     if (updatedArticle) {
       const persistenceKey = this.getArticleUniqueKey(updatedArticle);
       this.persistenceService.saveArticleState(persistenceKey, { isSkipped: true });
@@ -460,17 +457,15 @@ export class NewsService {
 
   undoSkip(articleId: string): void {
     const articles = this.allArticles();
-    const article = articles.find(a => a.id === articleId);
+    const article = articles.find((a) => a.id === articleId);
     if (!article) return;
 
-    const updatedArticles = articles.map(a =>
-      a.id === articleId
-        ? { ...a, isSkipped: false }
-        : a
+    const updatedArticles = articles.map((a) =>
+      a.id === articleId ? { ...a, isSkipped: false } : a
     );
     this.allArticles.set(updatedArticles);
 
-    const updatedArticle = updatedArticles.find(a => a.id === articleId);
+    const updatedArticle = updatedArticles.find((a) => a.id === articleId);
     if (updatedArticle) {
       const persistenceKey = this.getArticleUniqueKey(updatedArticle);
       this.persistenceService.saveArticleState(persistenceKey, { isSkipped: false });
@@ -480,9 +475,9 @@ export class NewsService {
   cleanupArticlesFromDisabledSources(): void {
     const currentArticles = this.allArticles();
     const enabledSources = this.sourceManagementService.getEnabledSources();
-    const enabledSourceNames = new Set(enabledSources.map(s => s.name));
+    const enabledSourceNames = new Set(enabledSources.map((s) => s.name));
 
-    const filteredArticles = currentArticles.filter(article => {
+    const filteredArticles = currentArticles.filter((article) => {
       // Keep article if it's from an enabled source
       if (enabledSourceNames.has(article.sourceName)) {
         return true;
@@ -516,7 +511,7 @@ export class NewsService {
     this.isRefreshing.set(true);
 
     // Fetch from all enabled RSS feeds
-    const feedRequests = enabledSources.map(source =>
+    const feedRequests = enabledSources.map((source) =>
       this.rssParserService.fetchAndParseRSS(source.url, source.name)
     );
 
@@ -566,14 +561,6 @@ export class NewsService {
         this.lastFetchStatus.set('success');
         this.isRefreshing.set(false);
 
-        // Show success message
-        const newArticlesCount = sortedArticles.length - currentArticlesCount;
-        if (newArticlesCount > 0) {
-          this.message.success(`Loaded ${allFetchedArticles.length} articles (${newArticlesCount} new)`);
-        } else {
-          this.message.success(`Feed updated - ${allFetchedArticles.length} articles`);
-        }
-
         // Show warning if some feeds failed
         if (errors.length > 0 && allFetchedArticles.length > 0) {
           console.warn('Some RSS feeds failed:', errors);
@@ -590,7 +577,7 @@ export class NewsService {
         }
         this.lastFetchStatus.set('error');
         this.isRefreshing.set(false);
-      }
+      },
     });
   }
 
@@ -601,11 +588,14 @@ export class NewsService {
    * - Maintains old articles
    * - New articles are added on top (by date)
    */
-  private mergeArticles(existingArticles: NewsArticle[], newArticles: NewsArticle[]): NewsArticle[] {
+  private mergeArticles(
+    existingArticles: NewsArticle[],
+    newArticles: NewsArticle[]
+  ): NewsArticle[] {
     // Create a map of existing articles by unique identifier
     const existingMap = new Map<string, NewsArticle>();
 
-    existingArticles.forEach(article => {
+    existingArticles.forEach((article) => {
       // Use URL as unique identifier (more reliable than generated IDs)
       const key = this.getArticleUniqueKey(article);
       existingMap.set(key, article);
@@ -615,7 +605,7 @@ export class NewsService {
     const articlesToAdd: NewsArticle[] = [];
     const updatedExistingArticles: NewsArticle[] = [];
 
-    newArticles.forEach(newArticle => {
+    newArticles.forEach((newArticle) => {
       const key = this.getArticleUniqueKey(newArticle);
       const existing = existingMap.get(key);
 
@@ -626,7 +616,7 @@ export class NewsService {
           isRead: existing.isRead,
           isBookmarked: existing.isBookmarked,
           isReadLater: existing.isReadLater,
-          isSkipped: existing.isSkipped
+          isSkipped: existing.isSkipped,
         });
         // Remove from map so we know it was processed
         existingMap.delete(key);
@@ -639,7 +629,7 @@ export class NewsService {
             isRead: persistedState.isRead,
             isBookmarked: persistedState.isBookmarked,
             isReadLater: persistedState.isReadLater,
-            isSkipped: persistedState.isSkipped
+            isSkipped: persistedState.isSkipped,
           });
         } else {
           articlesToAdd.push(newArticle);

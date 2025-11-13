@@ -140,7 +140,10 @@ export class AddExternalArticleModalComponent {
       imageUrl: this.imageUrlInput().trim(),
       sourceName: this.sourceInput().trim() || 'External Source',
       addedAt: new Date(),
-      isExternal: true
+      isExternal: true,
+      isReadLater: true,
+      isBookmarked: false,
+      isRead: false
     };
 
     this.articleAdded.emit(article);
