@@ -4,31 +4,26 @@
       <h1 class="app-title">{{ title() }}</h1>
 
       <div class="search-container">
-        <nz-input-group [nzPrefix]="prefixIconSearch" [nzSuffix]="suffixIconClear">
-          <input
-            nz-input
-            type="text"
-            placeholder="Search articles..."
-            [(ngModel)]="searchQuery"
-            (ngModelChange)="onSearchChange($event)"
-            aria-label="Search articles by title or description"
-          />
-        </nz-input-group>
-        <ng-template #prefixIconSearch>
-          <span nz-icon nzType="search" nzTheme="outline"></span>
-        </ng-template>
-        <ng-template #suffixIconClear>
-          @if (searchQuery()) {
-            <span
-              nz-icon
-              nzType="close-circle"
-              nzTheme="fill"
-              class="search-clear-icon"
-              (click)="onSearchClear()"
-              aria-label="Clear search"
-            ></span>
-          }
-        </ng-template>
+        <span class="search-prefix-icon" nz-icon nzType="search" nzTheme="outline"></span>
+        <input
+          nz-input
+          type="text"
+          placeholder="Search articles..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange($event)"
+          aria-label="Search articles by title or description"
+          class="search-input"
+        />
+        @if (searchQuery()) {
+          <span
+            nz-icon
+            nzType="close-circle"
+            nzTheme="fill"
+            class="search-clear-icon"
+            (click)="onSearchClear()"
+            aria-label="Clear search"
+          ></span>
+        }
       </div>
 
       <div class="header-actions">
@@ -88,6 +83,7 @@
 
           <button
             nz-button
+            nzType="default"
             nzSize="default"
             (click)="toggleSort()"
             [attr.aria-label]="sortOrder() === 'desc' ? 'Sort by oldest first' : 'Sort by latest first'"
@@ -96,10 +92,10 @@
           >
             @if (sortOrder() === 'desc') {
               <span nz-icon nzType="sort-descending" nzTheme="outline"></span>
-              <span class="sort-label">Latest</span>
+              <span class="btn-label">Latest</span>
             } @else {
               <span nz-icon nzType="sort-ascending" nzTheme="outline"></span>
-              <span class="sort-label">Oldest</span>
+              <span class="btn-label">Oldest</span>
             }
           </button>
 
