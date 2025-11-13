@@ -36,16 +36,28 @@ export class ReadLaterComponent {
 
   // Internal articles from news feed
   protected internalReadLaterArticles = computed(() => {
-    return this.newsService.articles$().filter(article => article.isReadLater && !article.isSkipped);
+    const articles = this.newsService.articles$().filter(article => article.isReadLater && !article.isSkipped);
+    const query = this.newsService.searchQuery().toLowerCase().trim();
+
+    if (!query) {
+      return articles;
+    }
+
+    return articles.filter(article =>
+      article.title.toLowerCase().includes(query) ||
+      article.description.toLowerCase().includes(query)
+    );
   });
 
   // External articles from localStorage
   protected externalArticles = signal<ExternalArticle[]>([]);
 
-  // Convert external articles to NewsArticle format for display
+  // Convert external articles to NewsArticle format for display with search filtering
   protected externalArticlesAsNews = computed(() => {
     const external = this.externalArticles();
-    return external.map(ext => ({
+    const query = this.newsService.searchQuery().toLowerCase().trim();
+
+    const converted = external.map(ext => ({
       id: ext.id,
       title: ext.title,
       description: ext.description || '',
@@ -58,6 +70,15 @@ export class ReadLaterComponent {
       isReadLater: true,
       isSkipped: false
     }));
+
+    if (!query) {
+      return converted;
+    }
+
+    return converted.filter(article =>
+      article.title.toLowerCase().includes(query) ||
+      article.description.toLowerCase().includes(query)
+    );
   });
 
   // Combined articles list (kept for total count)
