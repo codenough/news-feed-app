@@ -7,6 +7,8 @@ export interface ExternalArticle {
   sourceName?: string;
   addedAt: Date;
   isExternal: true;
+  isRead?: boolean;
+  isBookmarked?: boolean;
 }
 
 export interface ArticleMetadata {

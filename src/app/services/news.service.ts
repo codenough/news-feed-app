@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError, of, forkJoin } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NewsArticle } from '../models/news-article.interface';
+import { ExternalArticle } from '../models/external-article.interface';
 import { ArticlePersistenceService } from './article-persistence.service';
 import { SourceManagementService } from './source-management.service';
 import { RssParserService } from './rss-parser.service';
@@ -32,6 +33,7 @@ export class NewsService {
 
   private articlesSubject = new BehaviorSubject<NewsArticle[]>([]);
   private allArticles = signal<NewsArticle[]>([]);
+  private externalArticles = signal<ExternalArticle[]>([]);
 
   currentFilter = signal<FilterType>('all');
   currentSortOrder = signal<SortOrder>('desc');
@@ -39,8 +41,34 @@ export class NewsService {
   selectedSource = signal<string | null>(null);
   dateRange = signal<{ startDate: Date | null; endDate: Date | null }>({ startDate: null, endDate: null });
 
+  // Merge internal and external articles (external only included if bookmarked)
+  private mergedArticles = computed(() => {
+    const internal = this.allArticles();
+    const external = this.externalArticles();
+
+    // Convert bookmarked external articles to NewsArticle format
+    const externalAsNews: NewsArticle[] = external
+      .filter(ext => ext.isBookmarked)
+      .map(ext => ({
+        id: ext.id,
+        title: ext.title,
+        description: ext.description || '',
+        url: ext.url,
+        imageUrl: ext.imageUrl || '',
+        publishedAt: ext.addedAt,
+        sourceName: ext.sourceName || 'External Source',
+        isRead: ext.isRead || false,
+        isBookmarked: ext.isBookmarked || false,
+        isReadLater: true,
+        isSkipped: false,
+        isExternal: true
+      }));
+
+    return [...internal, ...externalAsNews];
+  });
+
   articles$ = computed(() => {
-    let filtered = this.filterByEnabledSources(this.allArticles());
+    let filtered = this.filterByEnabledSources(this.mergedArticles());
     filtered = this.filterArticles(filtered, this.currentFilter());
     filtered = this.filterBySource(filtered, this.selectedSource());
     filtered = this.filterByDateRange(filtered, this.dateRange());
@@ -90,6 +118,16 @@ export class NewsService {
     // Load cached articles on initialization
     this.loadCachedArticles();
     this.loadCachedTimestamp();
+    this.loadExternalArticles();
+  }
+
+  private loadExternalArticles(): void {
+    const external = this.persistenceService.getExternalArticlesList();
+    this.externalArticles.set(external);
+  }
+
+  refreshExternalArticles(): void {
+    this.loadExternalArticles();
   }
 
   private loadCachedArticles(): void {

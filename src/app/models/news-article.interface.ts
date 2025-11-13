@@ -10,6 +10,7 @@ export interface NewsArticle {
   isBookmarked: boolean;
   isReadLater: boolean;
   isSkipped: boolean;
+  isExternal?: boolean;
   category?: string;
   author?: string;
 }

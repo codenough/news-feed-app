@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NewsCardComponent } from '../../components/news-card/news-card.component';
 import { NewsArticle } from '../../models/news-article.interface';
 import { NewsService } from '../../services/news.service';
+import { ArticlePersistenceService } from '../../services/article-persistence.service';
 import { UserPreferencesService, FilterType } from '../../services/user-preferences.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -32,6 +33,7 @@ interface ArticleGroup {
 export class FeedComponent {
   private newsService = inject(NewsService);
   private preferencesService = inject(UserPreferencesService);
+  private persistenceService = inject(ArticlePersistenceService);
 
   protected viewMode = this.preferencesService.viewMode;
   protected currentFilter = this.preferencesService.currentFilter;
@@ -102,7 +104,18 @@ export class FeedComponent {
   }
 
   protected onBookmarkToggle(article: NewsArticle): void {
-    this.newsService.toggleBookmark(article.id);
+    if (article.isExternal) {
+      // Toggle bookmark for external article
+      const external = this.persistenceService.getExternalArticle(article.id);
+      if (external) {
+        const updatedArticle = { ...external, isBookmarked: !external.isBookmarked };
+        this.persistenceService.saveExternalArticle(updatedArticle);
+        this.newsService.refreshExternalArticles();
+      }
+    } else {
+      // Toggle bookmark for internal article
+      this.newsService.toggleBookmark(article.id);
+    }
   }
 
   protected onReadLaterToggle(article: NewsArticle): void {
