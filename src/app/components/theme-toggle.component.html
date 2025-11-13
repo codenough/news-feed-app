@@ -4,7 +4,9 @@
   nzShape="circle"
   (click)="toggleTheme()"
   [attr.aria-label]="themeService.theme() === 'light' ? 'Switch to dark mode' : 'Switch to light mode'"
-  title="Toggle theme"
+  nz-tooltip
+  nzTooltipTitle="Toggle theme"
+  nzTooltipPlacement="topRight"
   class="theme-toggle-btn"
 >
   @if (themeService.theme() === 'light') {

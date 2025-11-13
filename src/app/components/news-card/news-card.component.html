@@ -22,9 +22,9 @@
       </div>
     }
     @if (!article.isRead) {
-      <span class="news-card__unread-indicator" title="Unread article"></span>
+      <span class="news-card__unread-indicator" nz-tooltip nzTooltipTitle="Unread article"></span>
     } @else {
-      <span class="news-card__read-badge" title="Read article">
+      <span class="news-card__read-badge" nz-tooltip nzTooltipTitle="Read article">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
         </svg>
@@ -55,7 +55,8 @@
       [class.news-card__action-btn--active]="article.isBookmarked"
       (click)="onBookmarkClick($event)"
       [attr.aria-label]="article.isBookmarked ? 'Remove bookmark' : 'Bookmark article'"
-      title="Bookmark"
+      nz-tooltip
+      nzTooltipTitle="Bookmark"
       class="news-card__action-btn"
     >
       <span nz-icon [nzType]="article.isBookmarked ? 'star' : 'star'" [nzTheme]="article.isBookmarked ? 'fill' : 'outline'"></span>
@@ -69,7 +70,8 @@
       [class.news-card__action-btn--active]="article.isReadLater"
       (click)="onReadLaterClick($event)"
       [attr.aria-label]="article.isReadLater ? 'Remove from read later' : 'Add to read later'"
-      title="Read Later"
+      nz-tooltip
+      nzTooltipTitle="Read Later"
       class="news-card__action-btn"
     >
       <span nz-icon nzType="clock-circle" nzTheme="outline"></span>

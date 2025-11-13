@@ -73,7 +73,8 @@
               nzSize="default"
               (click)="navigateToReadLater()"
               aria-label="View read later articles"
-              title="Read Later"
+              nz-tooltip
+              nzTooltipTitle="Read Later"
               class="read-later-btn"
             >
               <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
@@ -87,7 +88,8 @@
             nzSize="default"
             (click)="toggleSort()"
             [attr.aria-label]="sortOrder() === 'desc' ? 'Sort by oldest first' : 'Sort by latest first'"
-            [title]="sortOrder() === 'desc' ? 'Sort by oldest' : 'Sort by latest'"
+            nz-tooltip
+            [nzTooltipTitle]="sortOrder() === 'desc' ? 'Sort by oldest' : 'Sort by latest'"
             class="sort-toggle-btn"
           >
             @if (sortOrder() === 'desc') {
@@ -101,14 +103,14 @@
 
           <button
             nz-button
+            nzType="default"
             nzSize="default"
-            nzShape="circle"
             (click)="onRefresh()"
             [nzLoading]="isLoading()"
             [disabled]="isLoading()"
             aria-label="Refresh feed"
-            title="Refresh feed"
-            class="refresh-btn"
+            nz-tooltip
+            nzTooltipTitle="Refresh feed"
           >
             <span nz-icon nzType="reload" nzTheme="outline"></span>
           </button>
@@ -127,7 +129,8 @@
             nzSize="default"
             routerLink="/admin"
             aria-label="Admin Dashboard"
-            title="Admin Dashboard"
+            nz-tooltip
+            nzTooltipTitle="Admin Dashboard"
           >
             <span nz-icon nzType="setting" nzTheme="outline"></span>
             <span class="btn-label">Admin</span>
@@ -139,6 +142,8 @@
             nzShape="circle"
             (click)="toggleViewMode()"
             [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+            nz-tooltip
+            [nzTooltipTitle]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
             class="view-toggle-btn"
           >
             @if (viewMode() === 'grid') {

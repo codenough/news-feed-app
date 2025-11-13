@@ -4,11 +4,12 @@ import { NewsArticle } from '../../models/news-article.interface';
 import { ArticleMenuComponent, MenuAction } from '../article-menu/article-menu.component';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 
 @Component({
   selector: 'app-news-card',
   standalone: true,
-  imports: [CommonModule, ArticleMenuComponent, NzButtonModule, NzIconModule],
+  imports: [CommonModule, ArticleMenuComponent, NzButtonModule, NzIconModule, NzTooltipModule],
   templateUrl: './news-card.component.html',
   styleUrl: './news-card.component.scss'
 })

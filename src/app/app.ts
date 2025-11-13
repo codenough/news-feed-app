@@ -11,6 +11,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,8 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
     NzIconModule,
     NzInputModule,
     NzButtonModule,
-    NzBadgeModule
+    NzBadgeModule,
+    NzTooltipModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
